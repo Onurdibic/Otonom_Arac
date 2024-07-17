@@ -1,0 +1,6 @@
+../Drivers/MyDrivers/Inc/gorevyonetici.h:15:8:Gorev::Gorev()	16	static
+../Drivers/MyDrivers/Src/gorevyonetici.cpp:4:1:Gorevyonetici::Gorevyonetici(TIM_TypeDef*)	24	static
+../Drivers/MyDrivers/Src/gorevyonetici.cpp:9:6:void Gorevyonetici::GorevAl(void (*)(), int16_t)	24	static
+../Drivers/MyDrivers/Src/gorevyonetici.cpp:18:6:void Gorevyonetici::BayrakKaldir()	24	static
+../Drivers/MyDrivers/Src/gorevyonetici.cpp:35:6:void Gorevyonetici::GorevCalistir()	24	static
+../Drivers/MyDrivers/Src/gorevyonetici.cpp:48:6:void Gorevyonetici::IRQHandler_()	16	static
