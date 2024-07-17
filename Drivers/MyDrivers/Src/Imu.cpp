@@ -15,40 +15,37 @@
 #define WHO_AM_I 0x75
 #define RESET_BIT 0x80
 
-MyImu::MyImu(I2C_HandleTypeDef *hi2c1)
+MyImu::MyImu(I2C_HandleTypeDef *hi2c)
 {
-	this->hi2c1=hi2c1;
+	this->hi2c=hi2c;
 }
 
 void MyImu::DBC_MPU6500_Reset()
 {
-	data = RESET_BIT;
-	HAL_I2C_Mem_Write(hi2c1, MPU6500_ADDRESS , PWR_MGMT_1_REG, 1, &data, 1, 1000);
+	data_u8 = RESET_BIT;
+	HAL_I2C_Mem_Write(hi2c, MPU6500_ADDRESS , PWR_MGMT_1_REG, 1, &data_u8, 1, 1000);
 	HAL_Delay(100);
 }
 void MyImu::DBC_MPU6500_YAPILANDIR()
 {
-	uint8_t check;
+	uint8_t check_u8;
 	DBC_MPU6500_Reset();
-	// Check device ID WHO_AM_I
-	HAL_I2C_Mem_Read(hi2c1, MPU6500_ADDRESS , WHO_AM_I, 1, &check, 1, 1000);
-	if (check == 0x70)
+	// yoklama sorgusu versiyon sorgusu crc kontrol ,sekmeli yap gps ekranı acı ekranı bağlantıekranı
+
+	HAL_I2C_Mem_Read(hi2c, MPU6500_ADDRESS , WHO_AM_I, 1, &check_u8, 1, 1000);
+	if (check_u8 == 0x70)
 	{
-		// Power management register 0X6B we should write all 0's to wake the sensor up
-		data = 0;
-		HAL_I2C_Mem_Write(hi2c1, MPU6500_ADDRESS , PWR_MGMT_1_REG, 1, &data, 1, 1000);
-
-		// Set Data Rate of 1KHz by writing SMPLRT_DIV register
-		data = 0x07;
-		HAL_I2C_Mem_Write(hi2c1, MPU6500_ADDRESS ,SMPLRT_DIV_REG, 1, &data, 1, 1000);
-
-		// Set accelerometer configuration in ACCEL_CONFIG Register
-		data = 0x00;
-		HAL_I2C_Mem_Write(hi2c1, MPU6500_ADDRESS, ACC_CNFG_REG, 1, &data, 1, 1000);
-
-		// Set Gyroscopic configuration in GYRO_CONFIG Register
-		data = 0x00;
-		HAL_I2C_Mem_Write(hi2c1, MPU6500_ADDRESS , GYRO_CNFG_REG, 1, &data, 1, 1000);
+		data_u8 = 0x00;
+		HAL_I2C_Mem_Write(hi2c, MPU6500_ADDRESS , PWR_MGMT_1_REG, 1, &data_u8, 1, 1000);
+		// SMPLRT_DIV register
+		data_u8 = 0x07;
+		HAL_I2C_Mem_Write(hi2c, MPU6500_ADDRESS ,SMPLRT_DIV_REG, 1, &data_u8, 1, 1000);
+		//  ACCEL_CONFIG Register ±2g(00),±4g(01),±8g(10),±16g(11) 4:3
+		data_u8 = 0x00;
+		HAL_I2C_Mem_Write(hi2c, MPU6500_ADDRESS, ACC_CNFG_REG, 1, &data_u8, 1, 1000);
+		//  GYRO_CONFIG Register +250dps(00),+500dps(01),+1000dps(10),+2000dps(11) 4:3
+		data_u8 = 0x00;
+		HAL_I2C_Mem_Write(hi2c, MPU6500_ADDRESS , GYRO_CNFG_REG, 1, &data_u8, 1, 1000);
 	}
 }
 
@@ -68,12 +65,10 @@ void MyImu::DBC_GYRO_OFSET()
 	    //HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 	    HAL_Delay(100);
 }
-void MyImu::DBC_READ_DATA()
+void MyImu::DBC_DATA_OKU()
 {
     DBC_ACC_OKU();
-
     DBC_SICAKLIK_OKU();
-
     DBC_GYRO_OKU();
 
     gyroEksen[0] -= gyroHesap[0];
@@ -82,69 +77,72 @@ void MyImu::DBC_READ_DATA()
 }
 void MyImu::DBC_ACC_OKU()
 {
-	uint8_t tuffer[6];
-	// Acc. Raw Values
-	tuffer[0] = 0x3B;
-	HAL_I2C_Master_Transmit(hi2c1, MPU6500_ADDRESS, tuffer, 1, HAL_MAX_DELAY);
-	HAL_I2C_Master_Receive(hi2c1, MPU6500_ADDRESS, tuffer, 6, HAL_MAX_DELAY);
-	accEksen[0] = (tuffer[0] << 8 | tuffer[1]);
-	accEksen[1] = (tuffer[2] << 8 | tuffer[3]);
-	accEksen[2] = (tuffer[4] << 8 | tuffer[5]);
+	uint8_t accBuffer[6];
+
+	accBuffer[0] = 0x3B;
+	HAL_I2C_Master_Transmit(hi2c, MPU6500_ADDRESS, accBuffer, 1, 10);
+	HAL_I2C_Master_Receive(hi2c, MPU6500_ADDRESS, accBuffer, 6, 10);
+	accEksen[0] = (accBuffer[0] << 8 | accBuffer[1]);
+	accEksen[1] = (accBuffer[2] << 8 | accBuffer[3]);
+	accEksen[2] = (accBuffer[4] << 8 | accBuffer[5]);
 }
 void MyImu::DBC_SICAKLIK_OKU()
 {
-	uint8_t buffer[2];
-	// Temperature Values
-	buffer[0] = 0x41;
-	HAL_I2C_Master_Transmit(hi2c1, MPU6500_ADDRESS, buffer, 1, HAL_MAX_DELAY);
-	HAL_I2C_Master_Receive(hi2c1, MPU6500_ADDRESS, buffer, 2, HAL_MAX_DELAY);
-	hamSicaklik = (buffer[0] << 8 | buffer[1]);
-	Sicaklik[0]=((float)((float)hamSicaklik / 340.0)) + 36.53;
+	uint8_t sicaklikBuffer[2];
+
+	sicaklikBuffer[0] = 0x41;
+	HAL_I2C_Master_Transmit(hi2c, MPU6500_ADDRESS, sicaklikBuffer, 1, 10);
+	HAL_I2C_Master_Receive(hi2c, MPU6500_ADDRESS, sicaklikBuffer, 2, 10);
+	hamSicaklik_u16 = (sicaklikBuffer[0] << 8 | sicaklikBuffer[1]);
+	Sicaklik_f=((float)((float)hamSicaklik_u16 / 340.0)) + 36.53;
 }
 void MyImu::DBC_GYRO_OKU()
 {
-	uint8_t cuffer[6];
-	 // Gyro Raw Values
-	cuffer[0] = 0x43;
-	HAL_I2C_Master_Transmit(hi2c1, MPU6500_ADDRESS, cuffer, 1, HAL_MAX_DELAY);
-	HAL_I2C_Master_Receive(hi2c1, MPU6500_ADDRESS, cuffer, 6, HAL_MAX_DELAY);
-	gyroEksen[0] = (cuffer[0] << 8 | cuffer[1]);
-	gyroEksen[1] = (cuffer[2] << 8 | cuffer[3]);
-	gyroEksen[2] = (cuffer[4] << 8 | cuffer[5]);
+	uint8_t gyroBuffer[6];
+
+	gyroBuffer[0] = 0x43;
+	HAL_I2C_Master_Transmit(hi2c, MPU6500_ADDRESS, gyroBuffer, 1, 10);
+	HAL_I2C_Master_Receive(hi2c, MPU6500_ADDRESS, gyroBuffer, 6, 10);
+	gyroEksen[0] = (gyroBuffer[0] << 8 | gyroBuffer[1]);
+	gyroEksen[1] = (gyroBuffer[2] << 8 | gyroBuffer[3]);
+	gyroEksen[2] = (gyroBuffer[4] << 8 | gyroBuffer[5]);
 
 }
 void MyImu::DBC_ACI_BULMA()
 {
-	DBC_READ_DATA();//0.00140.000001066
-	//HAM VERI iyilestirmeleri
-	gyroPitchAci += gyroEksen[0] * 0.00140; //65.5 * 4000 mikrosaniye
-	gyroRollAci += gyroEksen[1] * 0.00140;
-	gyroYawAci += gyroEksen[2] * 0.00140;
+	DBC_DATA_OKU();//0.0014 0.000001066
+	//Ham Veri Iyilestirmeleri
+	gyroPitchAci_f += gyroEksen[0] * 0.000207; //65.5 * 4000 mikrosaniye
+	gyroRollAci_f += gyroEksen[1] * 0.000207;
+	gyroYawAci_f += gyroEksen[2] * 0.000207;
 
-	gyroPitchAci += gyroRollAci * sin(gyroEksen[2]* 0.000001066);
-	gyroRollAci -= gyroPitchAci * sin(gyroEksen[2]* 0.000001066);
+	gyroPitchAci_f += gyroRollAci_f * sin(gyroEksen[2]* 0.000001066);
+	gyroRollAci_f -= gyroPitchAci_f * sin(gyroEksen[2]* 0.000001066);
 
-	accToplamVektor = sqrt((accEksen[0]*accEksen[0])+(accEksen[1]*accEksen[1])+(accEksen[2]*accEksen[2]));
+	accToplamVektor_s16 = sqrt((accEksen[0]*accEksen[0])+(accEksen[1]*accEksen[1])+(accEksen[2]*accEksen[2]));
 
 	//57.296 =1 /(3.142 /180)
-	accPitchAci = asin((float)accEksen[1]/accToplamVektor)*57.296;
-	accRollAci = asin((float)accEksen[0]/accToplamVektor)*-57.296;
+	accPitchAci_f = asin((float)accEksen[1]/accToplamVektor_s16)*57.296;
+	accRollAci_f = asin((float)accEksen[0]/accToplamVektor_s16)*-57.296;
 
-	pitchAcisi = gyroPitchAci * 0.9 + accPitchAci * 0.1;
-	rollAci = gyroRollAci * 0.9 + accRollAci * 0.1;
-
+	pitchAcisi_f = gyroPitchAci_f * 0.9 + accPitchAci_f * 0.1;
+	rollAci_f = gyroRollAci_f * 0.9 + accRollAci_f * 0.1;
 }
 
-float MyImu::PitchAl()
+float* MyImu::PitchAl()
 {
-    return pitchAcisi;
+    return &pitchAcisi_f;
 }
 
-float MyImu::RollAl()
+float* MyImu::RollAl()
 {
-    return rollAci;
+    return &rollAci_f;
 }
-float MyImu::YawAl()
+float* MyImu::YawAl()
 {
-    return gyroYawAci;
+    return &gyroYawAci_f;
+}
+float* MyImu::SicaklikAl()
+{
+    return &Sicaklik_f;
 }

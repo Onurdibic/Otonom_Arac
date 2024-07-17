@@ -15,36 +15,73 @@ Paket::Paket(uint8_t baslik1_u8, uint8_t baslik2_u8, uint8_t paketTipi_u8, uint8
 	this->dataBoyutu_u8=dataBoyutu_u8;
 	this->latitude=0;
 	this->longitude=0;
-    memset(paket, 0, sizeof(paket));
+	this->pitch=0;
+	this->roll=0;
+	this->yaw=0;
+	this->sicaklik=0;
+    memset(gpspaket, 0, sizeof(gpspaket));
+    memset(imupaket, 0, sizeof(imupaket));
 }
 
 void Paket::PaketOlustur(float latitude,float longitude)
 {
-    paket[0] = baslik1_u8;
-    paket[1] = baslik2_u8;
-    paket[2] = paketTipi_u8;
-    paket[3] = dataBoyutu_u8;
+	uint8_t latBytes_u8[4];
+	uint8_t lonBytes_u8[4];
+    gpspaket[0] = baslik1_u8;
+    gpspaket[1] = baslik2_u8;
+    gpspaket[2] = paketTipi_u8;
+    gpspaket[3] = dataBoyutu_u8;
     this->latitude = latitude;
     this->longitude = longitude;
-    uint8_t latBytes_u8[4];
-    uint8_t lonBytes_u8[4];
 
-    bytesToFloat(&latitude, latBytes_u8);
-    bytesToFloat(&longitude, lonBytes_u8);
+    floatToBytes(&latitude, latBytes_u8);
+    floatToBytes(&longitude, lonBytes_u8);
 
     for(int i = 0; i < 4; i++)
     {
-        paket[7 - i] = latBytes_u8[i];
-        paket[11 - i] = lonBytes_u8[i];
+        gpspaket[7 - i] = latBytes_u8[i];
+        gpspaket[11 - i] = lonBytes_u8[i];
     }
 }
-void Paket::PaketCagir(uint8_t *kopyaDizi)
+void Paket::PaketOlustur(float pitch,float roll,float yaw,float sicaklik)
 {
-	memcpy(kopyaDizi, paket, sizeof(paket));
+    uint8_t pitchBytes_u8[4];
+    uint8_t rollBytes_u8[4];
+    uint8_t yawBytes_u8[4];
+    uint8_t sicaklikBytes_u8[4];
+    imupaket[0] = baslik1_u8;
+    imupaket[1] = baslik2_u8;
+    imupaket[2] = paketTipi_u8;
+    imupaket[3] = dataBoyutu_u8;
+    this->pitch = pitch;
+    this->roll = roll;
+    this->yaw = yaw;
+    this-> sicaklik = sicaklik;
+
+    floatToBytes(&pitch, pitchBytes_u8);
+    floatToBytes(&roll, rollBytes_u8);
+    floatToBytes(&yaw, yawBytes_u8);
+    floatToBytes(&sicaklik, sicaklikBytes_u8);
+
+    for(int i = 0; i < 4; i++)
+    {
+        imupaket[7 - i] = pitchBytes_u8[i];
+        imupaket[11 - i] = rollBytes_u8[i];
+        imupaket[15 - i] = yawBytes_u8[i];
+        imupaket[19 - i] = sicaklikBytes_u8[i];
+    }
 }
-uint32_t Paket::bytesToFloat(float *koordinatDeger_f, uint8_t* bytes)
+void Paket::gpsPaketCagir(uint8_t *kopyaDizi)
 {
-    uint8_t* p = (uint8_t*)koordinatDeger_f;
+	memcpy(kopyaDizi, gpspaket, sizeof(gpspaket));
+}
+void Paket::imuPaketCagir(uint8_t *kopyaDizi)
+{
+	memcpy(kopyaDizi, imupaket, sizeof(imupaket));
+}
+uint32_t Paket::floatToBytes(float *Deger_f, uint8_t* bytes)
+{
+    uint8_t* p = (uint8_t*)Deger_f;
     for (int i = 0; i < 4; i++)
     {
         bytes[i] = p[i];

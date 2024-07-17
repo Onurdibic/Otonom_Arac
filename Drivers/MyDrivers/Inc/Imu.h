@@ -21,22 +21,23 @@ public:
     void DBC_GYRO_OKU();
     void DBC_SICAKLIK_OKU();
     void DBC_GYRO_OFSET();
-    void DBC_READ_DATA();
+    void DBC_DATA_OKU();
     void DBC_ACI_BULMA();
-    float PitchAl();
-    float RollAl();
-    float YawAl();
+    float* PitchAl();
+    float* RollAl();
+    float* YawAl();
+    float* SicaklikAl();
 private:
-    I2C_HandleTypeDef *hi2c1;
-    uint8_t data;
+    I2C_HandleTypeDef *hi2c;
+    uint8_t data_u8;
     int16_t gyroEksen[3], accEksen[3];
     float gyroHesap[3];
-    int16_t accToplamVektor;
-    float accPitchAci, accRollAci;
-    float gyroRollAci, gyroPitchAci, gyroYawAci;
-    float rollAci, pitchAcisi;
-    int16_t hamSicaklik;
-    float Sicaklik[1];
+    int16_t accToplamVektor_s16;
+    float accPitchAci_f, accRollAci_f;
+    float gyroRollAci_f, gyroPitchAci_f, gyroYawAci_f;
+    float rollAci_f, pitchAcisi_f;
+    uint16_t hamSicaklik_u16;
+    float Sicaklik_f;
 
 };
 
