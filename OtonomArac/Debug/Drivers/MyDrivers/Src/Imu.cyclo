@@ -1,5 +1,0 @@
-../Drivers/MyDrivers/Src/Imu.cpp:11:1:MyImu::MyImu(I2C_HandleTypeDef*)	1
-../Drivers/MyDrivers/Src/Imu.cpp:12:6:void MyImu::memwrite(int8_t*)	1
-../Drivers/MyDrivers/Src/Imu.cpp:24:6:void MyImu::gyroOffset(float*)	2
-../Drivers/MyDrivers/Src/Imu.cpp:52:6:void MyImu::readData(int16_t*, int16_t*, int16_t&, float&)	1
-../Drivers/MyDrivers/Src/Imu.cpp:78:6:void MyImu::veriOku()	1

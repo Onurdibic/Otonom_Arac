@@ -1,8 +1,0 @@
-../Drivers/MyDrivers/Src/Motor.cpp:8:1:Motor::Motor()	1
-../Drivers/MyDrivers/Src/Motor.cpp:12:6:void Motor::init(int)	1
-../Drivers/MyDrivers/Src/Motor.cpp:16:6:void Motor::git(int)	1
-../Drivers/MyDrivers/Src/Motor.cpp:20:6:void Motor::dur()	1
-../Drivers/MyDrivers/Src/Motor.cpp:25:1:Araba::Araba(Motor&, Motor&, Motor&, Motor&)	1
-../Drivers/MyDrivers/Src/Motor.cpp:27:6:void Araba::duzGit()	1
-../Drivers/MyDrivers/Src/Motor.cpp:31:6:void Araba::sagGit()	1
-../Drivers/MyDrivers/Src/Motor.cpp:35:6:void Araba::solGit()	1

@@ -1,4 +1,0 @@
-../Drivers/MyDrivers/Src/Paket.cpp:10:1:Paket::Paket(uint8_t, uint8_t, uint8_t, uint8_t)	1
-../Drivers/MyDrivers/Src/Paket.cpp:21:6:void Paket::PaketOlustur(float, float)	2
-../Drivers/MyDrivers/Src/Paket.cpp:41:6:void Paket::PaketCagir(uint8_t*)	1
-../Drivers/MyDrivers/Src/Paket.cpp:45:10:uint32_t Paket::bytesToFloat(float*, uint8_t*)	2
