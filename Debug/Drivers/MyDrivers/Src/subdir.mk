@@ -7,6 +7,7 @@
 CPP_SRCS += \
 ../Drivers/MyDrivers/Src/Gps.cpp \
 ../Drivers/MyDrivers/Src/Imu.cpp \
+../Drivers/MyDrivers/Src/Mag.cpp \
 ../Drivers/MyDrivers/Src/Motor.cpp \
 ../Drivers/MyDrivers/Src/Paket.cpp \
 ../Drivers/MyDrivers/Src/RfCom.cpp \
@@ -17,6 +18,7 @@ CPP_SRCS += \
 OBJS += \
 ./Drivers/MyDrivers/Src/Gps.o \
 ./Drivers/MyDrivers/Src/Imu.o \
+./Drivers/MyDrivers/Src/Mag.o \
 ./Drivers/MyDrivers/Src/Motor.o \
 ./Drivers/MyDrivers/Src/Paket.o \
 ./Drivers/MyDrivers/Src/RfCom.o \
@@ -27,6 +29,7 @@ OBJS += \
 CPP_DEPS += \
 ./Drivers/MyDrivers/Src/Gps.d \
 ./Drivers/MyDrivers/Src/Imu.d \
+./Drivers/MyDrivers/Src/Mag.d \
 ./Drivers/MyDrivers/Src/Motor.d \
 ./Drivers/MyDrivers/Src/Paket.d \
 ./Drivers/MyDrivers/Src/RfCom.d \
@@ -42,7 +45,7 @@ Drivers/MyDrivers/Src/%.o Drivers/MyDrivers/Src/%.su Drivers/MyDrivers/Src/%.cyc
 clean: clean-Drivers-2f-MyDrivers-2f-Src
 
 clean-Drivers-2f-MyDrivers-2f-Src:
-	-$(RM) ./Drivers/MyDrivers/Src/Gps.cyclo ./Drivers/MyDrivers/Src/Gps.d ./Drivers/MyDrivers/Src/Gps.o ./Drivers/MyDrivers/Src/Gps.su ./Drivers/MyDrivers/Src/Imu.cyclo ./Drivers/MyDrivers/Src/Imu.d ./Drivers/MyDrivers/Src/Imu.o ./Drivers/MyDrivers/Src/Imu.su ./Drivers/MyDrivers/Src/Motor.cyclo ./Drivers/MyDrivers/Src/Motor.d ./Drivers/MyDrivers/Src/Motor.o ./Drivers/MyDrivers/Src/Motor.su ./Drivers/MyDrivers/Src/Paket.cyclo ./Drivers/MyDrivers/Src/Paket.d ./Drivers/MyDrivers/Src/Paket.o ./Drivers/MyDrivers/Src/Paket.su ./Drivers/MyDrivers/Src/RfCom.cyclo ./Drivers/MyDrivers/Src/RfCom.d ./Drivers/MyDrivers/Src/RfCom.o ./Drivers/MyDrivers/Src/RfCom.su ./Drivers/MyDrivers/Src/gorevyonetici.cyclo ./Drivers/MyDrivers/Src/gorevyonetici.d ./Drivers/MyDrivers/Src/gorevyonetici.o ./Drivers/MyDrivers/Src/gorevyonetici.su ./Drivers/MyDrivers/Src/myUart.cyclo ./Drivers/MyDrivers/Src/myUart.d ./Drivers/MyDrivers/Src/myUart.o ./Drivers/MyDrivers/Src/myUart.su ./Drivers/MyDrivers/Src/mytimer.cyclo ./Drivers/MyDrivers/Src/mytimer.d ./Drivers/MyDrivers/Src/mytimer.o ./Drivers/MyDrivers/Src/mytimer.su
+	-$(RM) ./Drivers/MyDrivers/Src/Gps.cyclo ./Drivers/MyDrivers/Src/Gps.d ./Drivers/MyDrivers/Src/Gps.o ./Drivers/MyDrivers/Src/Gps.su ./Drivers/MyDrivers/Src/Imu.cyclo ./Drivers/MyDrivers/Src/Imu.d ./Drivers/MyDrivers/Src/Imu.o ./Drivers/MyDrivers/Src/Imu.su ./Drivers/MyDrivers/Src/Mag.cyclo ./Drivers/MyDrivers/Src/Mag.d ./Drivers/MyDrivers/Src/Mag.o ./Drivers/MyDrivers/Src/Mag.su ./Drivers/MyDrivers/Src/Motor.cyclo ./Drivers/MyDrivers/Src/Motor.d ./Drivers/MyDrivers/Src/Motor.o ./Drivers/MyDrivers/Src/Motor.su ./Drivers/MyDrivers/Src/Paket.cyclo ./Drivers/MyDrivers/Src/Paket.d ./Drivers/MyDrivers/Src/Paket.o ./Drivers/MyDrivers/Src/Paket.su ./Drivers/MyDrivers/Src/RfCom.cyclo ./Drivers/MyDrivers/Src/RfCom.d ./Drivers/MyDrivers/Src/RfCom.o ./Drivers/MyDrivers/Src/RfCom.su ./Drivers/MyDrivers/Src/gorevyonetici.cyclo ./Drivers/MyDrivers/Src/gorevyonetici.d ./Drivers/MyDrivers/Src/gorevyonetici.o ./Drivers/MyDrivers/Src/gorevyonetici.su ./Drivers/MyDrivers/Src/myUart.cyclo ./Drivers/MyDrivers/Src/myUart.d ./Drivers/MyDrivers/Src/myUart.o ./Drivers/MyDrivers/Src/myUart.su ./Drivers/MyDrivers/Src/mytimer.cyclo ./Drivers/MyDrivers/Src/mytimer.d ./Drivers/MyDrivers/Src/mytimer.o ./Drivers/MyDrivers/Src/mytimer.su
 
 .PHONY: clean-Drivers-2f-MyDrivers-2f-Src
 

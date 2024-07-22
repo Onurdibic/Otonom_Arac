@@ -91,7 +91,9 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_SPI1_Init();
+  MX_USART3_UART_Init();
   MX_USART2_UART_Init();
+  MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
 
   setup();
@@ -102,6 +104,7 @@ int main(void)
   while (1)
   {
 	  loop();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

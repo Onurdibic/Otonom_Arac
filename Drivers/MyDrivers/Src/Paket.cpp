@@ -1,12 +1,27 @@
-/*
- * Paket.cpp
- *
- *  Created on: Jul 8, 2024
- *      Author: onurd
- */
 #include "Paket.h"
 #include <string.h>
 
+enum Durumlar
+{
+	Baslik1Coz,
+	Baslik2Coz,
+	PaketTuruSec,
+	DataBoyutuAl,
+	DataOku
+
+};
+enum Paketler
+{
+	GPS=0x01 ,
+	YOKLAMA=0x02
+
+};
+
+Paket::Paket(UART_HandleTypeDef* huart)
+{
+	this->huart=huart;
+
+}
 Paket::Paket(uint8_t baslik1_u8, uint8_t baslik2_u8, uint8_t paketTipi_u8, uint8_t dataBoyutu_u8)
 {
 	this->baslik1_u8=baslik1_u8;
@@ -22,37 +37,33 @@ Paket::Paket(uint8_t baslik1_u8, uint8_t baslik2_u8, uint8_t paketTipi_u8, uint8
     memset(gpspaket, 0, sizeof(gpspaket));
     memset(imupaket, 0, sizeof(imupaket));
 }
-
+void Paket::PaketKesmeInit()
+{
+	HAL_UART_Receive_IT(huart, ArayuzData, sizeof(ArayuzData));
+}
 void Paket::PaketOlustur(float latitude,float longitude)
 {
-	uint8_t latBytes_u8[4];
-	uint8_t lonBytes_u8[4];
-    gpspaket[0] = baslik1_u8;
-    gpspaket[1] = baslik2_u8;
-    gpspaket[2] = paketTipi_u8;
-    gpspaket[3] = dataBoyutu_u8;
+
+    gpspaket[0] = 0x12;
+    gpspaket[1] = 0x34;
+    gpspaket[2] = 0x01;
+    gpspaket[3] = 0x09;
     this->latitude = latitude;
     this->longitude = longitude;
 
     floatToBytes(&latitude, latBytes_u8);
     floatToBytes(&longitude, lonBytes_u8);
 
-    for(int i = 0; i < 4; i++)
-    {
-        gpspaket[7 - i] = latBytes_u8[i];
-        gpspaket[11 - i] = lonBytes_u8[i];
-    }
+    memcpy(gpspaket + 4, latBytes_u8, 4);
+    memcpy(gpspaket + 8, lonBytes_u8, 4);
+    gpspaket[13]=CRC8Hesaplama(gpspaket,4, 12);
 }
 void Paket::PaketOlustur(float pitch,float roll,float yaw,float sicaklik)
 {
-    uint8_t pitchBytes_u8[4];
-    uint8_t rollBytes_u8[4];
-    uint8_t yawBytes_u8[4];
-    uint8_t sicaklikBytes_u8[4];
-    imupaket[0] = baslik1_u8;
-    imupaket[1] = baslik2_u8;
-    imupaket[2] = paketTipi_u8;
-    imupaket[3] = dataBoyutu_u8;
+    imupaket[0] = 0x12;
+    imupaket[1] = 0x34;
+    imupaket[2] = 0x02;
+    imupaket[3] = 0x11;
     this->pitch = pitch;
     this->roll = roll;
     this->yaw = yaw;
@@ -63,13 +74,12 @@ void Paket::PaketOlustur(float pitch,float roll,float yaw,float sicaklik)
     floatToBytes(&yaw, yawBytes_u8);
     floatToBytes(&sicaklik, sicaklikBytes_u8);
 
-    for(int i = 0; i < 4; i++)
-    {
-        imupaket[7 - i] = pitchBytes_u8[i];
-        imupaket[11 - i] = rollBytes_u8[i];
-        imupaket[15 - i] = yawBytes_u8[i];
-        imupaket[19 - i] = sicaklikBytes_u8[i];
-    }
+    memcpy(imupaket + 4, pitchBytes_u8, 4);
+    memcpy(imupaket + 8, rollBytes_u8, 4);
+    memcpy(imupaket + 12, yawBytes_u8, 4);
+    memcpy(imupaket + 16, sicaklikBytes_u8, 4);
+
+    imupaket[20] = CRC8Hesaplama(imupaket, 4,20);
 }
 void Paket::gpsPaketCagir(uint8_t *kopyaDizi)
 {
@@ -79,6 +89,127 @@ void Paket::imuPaketCagir(uint8_t *kopyaDizi)
 {
 	memcpy(kopyaDizi, imupaket, sizeof(imupaket));
 }
+
+void Paket::BayrakKaldir()
+{
+	PaketCozBayrak=true;
+}
+void Paket::PaketCoz()
+{
+    Durumlar Durum = Baslik1Coz;
+    Paketler Paket = YOKLAMA;
+    bool islem = true;
+
+    while (islem)
+    {
+        switch (Durum)
+        {
+            case Baslik1Coz:
+                if (ArayuzData[startIndex_u32] == 0x43 && ArayuzData[startIndex_u32] != 0)
+                {
+                    Durum = Baslik2Coz;
+                }
+                startIndex_u32 = (startIndex_u32 + 1) % 12;
+                break;
+
+            case Baslik2Coz:
+                if (ArayuzData[startIndex_u32] == 0x12 && ArayuzData[startIndex_u32] != 0)
+                {
+                    Durum = PaketTuruSec;
+                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                }
+                else
+                {
+                    Durum = Baslik1Coz;
+                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                }
+                break;
+
+            case PaketTuruSec:
+                if (ArayuzData[startIndex_u32] != 0)
+                {
+                    Paket = (Paketler)ArayuzData[startIndex_u32];
+                    Durum = DataBoyutuAl;
+                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                }
+                else
+                {
+                    Durum = Baslik1Coz;
+                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                }
+                break;
+
+            case DataBoyutuAl:
+                if (ArayuzData[startIndex_u32] != 0)
+                {
+                    dataLength_s16 = ArayuzData[startIndex_u32];
+                    Durum = DataOku;
+                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                }
+                else
+                {
+                    Durum = Baslik1Coz;
+                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                }
+                break;
+
+            case DataOku:
+                if (Paket == GPS && dataLength_s16 == 8)
+                {
+                    ArayuzEnlem_f = bytesToFloat(ArayuzData, startIndex_u32);
+                    ArayuzBoylam_f = bytesToFloat(ArayuzData, (startIndex_u32 + 4) % 12);
+
+
+                    if (ArayuzEnlem_f != 0 && ArayuzBoylam_f != 0)
+                    {
+
+                    }
+
+                    startIndex_u32 = (startIndex_u32 + dataLength_s16) % 12;
+                }
+
+                startIndex_u32 = 0;
+                islem = false;
+                break;
+        }
+    }
+
+    HAL_UART_Receive_IT(huart, ArayuzData, sizeof(ArayuzData));
+}
+
+uint8_t Paket::CRC8Hesaplama(uint8_t *data, uint8_t start ,uint8_t end)
+{
+    uint8_t crc = 0x00;
+
+    for (uint8_t i = start; i < end; i++)
+    {
+        crc ^= data[i]; // CRC değerini, dizinin bir sonraki byte ile XOR
+        for (uint8_t j = 0; j < 8; j++) //Her bir byte için döngü
+        {
+            if (crc & 0x80)//CRC değerinin en soldaki biti 1 mi
+            {
+                crc = (crc << 1) ^ 0X07; //En yüksek bit birse CRC değerini bir bit sola kaydır ve XOR işlemi yap
+            }
+            else
+            {
+                crc <<= 1; //En yüksek bit sıfırsa CRC değerini bir bit sola kaydır
+            }
+        }
+    }
+
+    return crc;
+}
+
+float Paket::bytesToFloat(const uint8_t* buffer, int32_t startIndex) {
+   intBits_u32 =(buffer[(startIndex + 0) % 120] << 24) |
+    		(buffer[(startIndex + 1) % 120] << 16) |
+			(buffer[(startIndex + 2) % 120] << 8)  |
+			(buffer[(startIndex + 3) % 120] << 0)  ;
+
+    memcpy(&sonuc, &intBits_u32, sizeof(sonuc));
+    return sonuc;
+}
+
 uint32_t Paket::floatToBytes(float *Deger_f, uint8_t* bytes)
 {
     uint8_t* p = (uint8_t*)Deger_f;

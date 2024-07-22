@@ -13,6 +13,7 @@
 "./Core/Startup/startup_stm32f407vgtx.o"
 "./Drivers/MyDrivers/Src/Gps.o"
 "./Drivers/MyDrivers/Src/Imu.o"
+"./Drivers/MyDrivers/Src/Mag.o"
 "./Drivers/MyDrivers/Src/Motor.o"
 "./Drivers/MyDrivers/Src/Paket.o"
 "./Drivers/MyDrivers/Src/RfCom.o"

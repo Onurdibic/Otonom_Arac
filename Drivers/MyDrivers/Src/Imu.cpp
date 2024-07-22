@@ -30,7 +30,7 @@ void MyImu::DBC_MPU6500_YAPILANDIR()
 {
 	uint8_t check_u8;
 	DBC_MPU6500_Reset();
-	// yoklama sorgusu versiyon sorgusu crc kontrol ,sekmeli yap gps ekranı acı ekranı bağlantıekranı
+	// yoklama sorgusu versiyon sorgusu crc kontrol ,
 
 	HAL_I2C_Mem_Read(hi2c, MPU6500_ADDRESS , WHO_AM_I, 1, &check_u8, 1, 1000);
 	if (check_u8 == 0x70)
