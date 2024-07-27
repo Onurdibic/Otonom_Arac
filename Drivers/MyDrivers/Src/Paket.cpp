@@ -13,7 +13,7 @@ enum Durumlar
 enum Paketler
 {
 	GPS=0x01 ,
-	YOKLAMA=0x02
+	VERSIYON=0x02
 
 };
 
@@ -32,7 +32,7 @@ Paket::Paket(uint8_t baslik1_u8, uint8_t baslik2_u8, uint8_t paketTipi_u8, uint8
 	this->longitude=0;
 	this->pitch=0;
 	this->roll=0;
-	this->yaw=0;
+	this->heading=0;
 	this->sicaklik=0;
     memset(gpspaket, 0, sizeof(gpspaket));
     memset(imupaket, 0, sizeof(imupaket));
@@ -58,7 +58,7 @@ void Paket::PaketOlustur(float latitude,float longitude)
     memcpy(gpspaket + 8, lonBytes_u8, 4);
     gpspaket[13]=CRC8Hesaplama(gpspaket,4, 12);
 }
-void Paket::PaketOlustur(float pitch,float roll,float yaw,float sicaklik)
+void Paket::PaketOlustur(float pitch,float roll,float heading,float sicaklik)
 {
     imupaket[0] = 0x12;
     imupaket[1] = 0x34;
@@ -66,20 +66,29 @@ void Paket::PaketOlustur(float pitch,float roll,float yaw,float sicaklik)
     imupaket[3] = 0x11;
     this->pitch = pitch;
     this->roll = roll;
-    this->yaw = yaw;
+    this->heading = heading;
     this-> sicaklik = sicaklik;
 
     floatToBytes(&pitch, pitchBytes_u8);
     floatToBytes(&roll, rollBytes_u8);
-    floatToBytes(&yaw, yawBytes_u8);
+    floatToBytes(&heading, headingBytes_u8);
     floatToBytes(&sicaklik, sicaklikBytes_u8);
 
     memcpy(imupaket + 4, pitchBytes_u8, 4);
     memcpy(imupaket + 8, rollBytes_u8, 4);
-    memcpy(imupaket + 12, yawBytes_u8, 4);
+    memcpy(imupaket + 12, headingBytes_u8, 4);
     memcpy(imupaket + 16, sicaklikBytes_u8, 4);
 
     imupaket[20] = CRC8Hesaplama(imupaket, 4,20);
+}
+void Paket::PaketOlusturveGonder(uint8_t b,uint8_t o,uint8_t s)
+{
+	ArayuzData[2]=0x03;
+	ArayuzData[4]=b;
+	ArayuzData[5]=o;
+	ArayuzData[6]=s;
+	HAL_UART_Transmit(huart, ArayuzData, sizeof(ArayuzData), 1000);
+
 }
 void Paket::gpsPaketCagir(uint8_t *kopyaDizi)
 {
@@ -97,31 +106,30 @@ void Paket::BayrakKaldir()
 void Paket::PaketCoz()
 {
     Durumlar Durum = Baslik1Coz;
-    Paketler Paket = YOKLAMA;
-    bool islem = true;
-
+    Paketler Paket = VERSIYON;
+    bool islem=true;
     while (islem)
     {
         switch (Durum)
         {
             case Baslik1Coz:
-                if (ArayuzData[startIndex_u32] == 0x43 && ArayuzData[startIndex_u32] != 0)
+                if (ArayuzData[startIndex_u32] == 0x12 && ArayuzData[startIndex_u32] != 0)
                 {
                     Durum = Baslik2Coz;
                 }
-                startIndex_u32 = (startIndex_u32 + 1) % 12;
+                startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
                 break;
 
             case Baslik2Coz:
-                if (ArayuzData[startIndex_u32] == 0x12 && ArayuzData[startIndex_u32] != 0)
+                if (ArayuzData[startIndex_u32] == 0x34 && ArayuzData[startIndex_u32] != 0)
                 {
                     Durum = PaketTuruSec;
-                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
                 }
                 else
                 {
                     Durum = Baslik1Coz;
-                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
                 }
                 break;
 
@@ -130,12 +138,12 @@ void Paket::PaketCoz()
                 {
                     Paket = (Paketler)ArayuzData[startIndex_u32];
                     Durum = DataBoyutuAl;
-                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
                 }
                 else
                 {
                     Durum = Baslik1Coz;
-                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
                 }
                 break;
 
@@ -144,12 +152,12 @@ void Paket::PaketCoz()
                 {
                     dataLength_s16 = ArayuzData[startIndex_u32];
                     Durum = DataOku;
-                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
                 }
                 else
                 {
                     Durum = Baslik1Coz;
-                    startIndex_u32 = (startIndex_u32 + 1) % 12;
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
                 }
                 break;
 
@@ -157,7 +165,7 @@ void Paket::PaketCoz()
                 if (Paket == GPS && dataLength_s16 == 8)
                 {
                     ArayuzEnlem_f = bytesToFloat(ArayuzData, startIndex_u32);
-                    ArayuzBoylam_f = bytesToFloat(ArayuzData, (startIndex_u32 + 4) % 12);
+                    ArayuzBoylam_f = bytesToFloat(ArayuzData, (startIndex_u32 + 4) % sizeof(ArayuzData));
 
 
                     if (ArayuzEnlem_f != 0 && ArayuzBoylam_f != 0)
@@ -165,11 +173,21 @@ void Paket::PaketCoz()
 
                     }
 
-                    startIndex_u32 = (startIndex_u32 + dataLength_s16) % 12;
+                    startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzData);
+                    Durum = Baslik1Coz;
                 }
+                if (Paket == VERSIYON && dataLength_s16 == 8)
+                {
 
-                startIndex_u32 = 0;
-                islem = false;
+                	PaketOlusturveGonder(0,0,4);
+                	startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzData);
+                	Durum = Baslik1Coz;
+                }
+                else
+                {
+                	Durum = Baslik1Coz;
+                	islem=false;
+                }
                 break;
         }
     }
@@ -201,10 +219,10 @@ uint8_t Paket::CRC8Hesaplama(uint8_t *data, uint8_t start ,uint8_t end)
 }
 
 float Paket::bytesToFloat(const uint8_t* buffer, int32_t startIndex) {
-   intBits_u32 =(buffer[(startIndex + 0) % 120] << 24) |
-    		(buffer[(startIndex + 1) % 120] << 16) |
-			(buffer[(startIndex + 2) % 120] << 8)  |
-			(buffer[(startIndex + 3) % 120] << 0)  ;
+   intBits_u32 =(buffer[(startIndex + 3) % 120] << 24) |
+    		(buffer[(startIndex + 2) % 120] << 16) |
+			(buffer[(startIndex + 1) % 120] << 8)  |
+			(buffer[(startIndex + 0) % 120] << 0)  ;
 
     memcpy(&sonuc, &intBits_u32, sizeof(sonuc));
     return sonuc;

@@ -1,8 +1,13 @@
-../Drivers/MyDrivers/Src/Motor.cpp:8:1:Motor::Motor()	16	static
-../Drivers/MyDrivers/Src/Motor.cpp:12:6:void Motor::init(int)	16	static
-../Drivers/MyDrivers/Src/Motor.cpp:16:6:void Motor::git(int)	16	static
-../Drivers/MyDrivers/Src/Motor.cpp:20:6:void Motor::dur()	16	static
-../Drivers/MyDrivers/Src/Motor.cpp:25:1:Araba::Araba(Motor&, Motor&, Motor&, Motor&)	24	static
-../Drivers/MyDrivers/Src/Motor.cpp:27:6:void Araba::duzGit()	16	static
-../Drivers/MyDrivers/Src/Motor.cpp:31:6:void Araba::sagGit()	16	static
-../Drivers/MyDrivers/Src/Motor.cpp:35:6:void Araba::solGit()	16	static
+../Drivers/MyDrivers/Src/Motor.cpp:8:1:Motor::Motor(TIM_HandleTypeDef*, TIM_HandleTypeDef*, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t)	24	static
+../Drivers/MyDrivers/Src/Motor.cpp:17:6:void Motor::Yapilandir()	16	static
+../Drivers/MyDrivers/Src/Motor.cpp:23:6:void Motor::PWM(uint16_t)	16	static
+../Drivers/MyDrivers/Src/Motor.cpp:27:6:void Motor::AciBul()	40	static
+../Drivers/MyDrivers/Src/Motor.cpp:49:6:void Motor::IleriGit()	16	static
+../Drivers/MyDrivers/Src/Motor.cpp:54:6:void Motor::GeriGit()	16	static
+../Drivers/MyDrivers/Src/Motor.cpp:59:6:void Motor::Dur()	16	static
+../Drivers/MyDrivers/Src/Motor.cpp:64:8:float* Motor::AciAl()	16	static
+../Drivers/MyDrivers/Src/Motor.cpp:69:9:int8_t* Motor::TurAl()	16	static
+../Drivers/MyDrivers/Src/Motor.cpp:73:1:Araba::Araba(Motor&, Motor&, Motor&, Motor&)	24	static
+../Drivers/MyDrivers/Src/Motor.cpp:76:6:void Araba::duzGit()	16	static
+../Drivers/MyDrivers/Src/Motor.cpp:83:6:void Araba::sagGit()	16	static
+../Drivers/MyDrivers/Src/Motor.cpp:90:6:void Araba::solGit()	16	static

@@ -19,10 +19,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "i2c.h"
-#include "spi.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "program.h"
@@ -40,7 +39,8 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+int16_t encoder_value;
+int16_t encoder_valuex;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -52,7 +52,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+float temp, press, altitude;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -90,19 +90,25 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
-  MX_SPI1_Init();
   MX_USART3_UART_Init();
   MX_USART2_UART_Init();
   MX_I2C3_Init();
+  MX_TIM2_Init();
+  MX_TIM1_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
-
+  //HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   setup();
+
+
+  //HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
 	  loop();
 
     /* USER CODE END WHILE */

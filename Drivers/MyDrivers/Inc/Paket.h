@@ -19,6 +19,7 @@ public:
 
     void PaketOlustur(float latitude,float longitude);
     void PaketOlustur(float pitch,float roll,float yaw,float sicaklik);
+    void PaketOlusturveGonder(uint8_t b,uint8_t o,uint8_t s);
     void gpsPaketCagir(uint8_t *kopyaDizi);
     void imuPaketCagir(uint8_t *kopyaDizi);
 
@@ -37,7 +38,7 @@ private:
     uint8_t ArayuzData[12];
     uint8_t pitchBytes_u8[4];
     uint8_t rollBytes_u8[4];
-    uint8_t yawBytes_u8[4];
+    uint8_t headingBytes_u8[4];
     uint8_t sicaklikBytes_u8[4];
 
     uint8_t latBytes_u8[4];
@@ -55,7 +56,7 @@ private:
     float longitude;
     float pitch;
 	float roll;
-	float yaw;
+	float heading;
 	float sicaklik;
 	float sonuc ;
 	float ArayuzEnlem_f = 0;

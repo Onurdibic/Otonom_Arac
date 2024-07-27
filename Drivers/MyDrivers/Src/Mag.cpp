@@ -2,87 +2,79 @@
 
 #define HMC5883L_ADDRESS 0x1E << 1 // I2C adresi
 
-HMC5883L::HMC5883L(I2C_HandleTypeDef *hi2c)
+MyMag::MyMag(I2C_HandleTypeDef *hi2c)
 {
   this->hi2c = hi2c;
-  x = y = z = 0;
-  heading = headingAcisi = 0.0f;
+  x_s16 = y_s16 = z_s16 = 0;
+  heading_f = headingAcisi_f = 0.0f;
+  xOffset_f = yOffset_f =0.0f;
 }
 
-void HMC5883L::Yapilandir()
+void MyMag::Yapilandir()
 {
-  // Configuration Register A
-	registerYaz(HMC5883_REGISTER_MAG_CRA_REG_M, 0x70); // 8 ortalama, 15 Hz, normal ölçüm
+	//Configuration Register A
+	uint8_t dataCRA[2] = {HMC5883_REGISTER_MAG_CRA_REG_M, 0x70}; // 8 ortalama, 15 Hz, normal ölçüm
+	HAL_I2C_Master_Transmit(hi2c, HMC5883L_ADDRESS, dataCRA, 2, 100);
 
-  // Configuration Register B
-	registerYaz(HMC5883_REGISTER_MAG_CRB_REG_M, HMC5883_MAGGAIN_1_3); // Kazanç = +/- 1.3
+	// Configuration Register B
+	uint8_t dataCRB[2] = {HMC5883_REGISTER_MAG_CRB_REG_M, HMC5883_MAGGAIN_1_3}; // Kazanç = +/- 1.3
+	HAL_I2C_Master_Transmit(hi2c, HMC5883L_ADDRESS, dataCRB, 2, 100);
 
-  // Mode Register
-	registerYaz(HMC5883_REGISTER_MAG_MR_REG_M, 0x00); // Sürekli ölçüm modu
+	// Mode Register
+	uint8_t dataMR[2] = {HMC5883_REGISTER_MAG_MR_REG_M, 0x00}; // Sürekli ölçüm modu
+	HAL_I2C_Master_Transmit(hi2c, HMC5883L_ADDRESS, dataMR, 2, 100);
 }
 
-void HMC5883L::registerYaz(uint8_t reg, uint8_t value)
-{
-  uint8_t data[2] = {reg, value};
-  HAL_I2C_Master_Transmit(hi2c, HMC5883L_ADDRESS, data, 2, HAL_MAX_DELAY);
-}
-
-void HMC5883L::registerOku(uint8_t reg, uint8_t *value)
-{
-  HAL_I2C_Master_Transmit(hi2c, HMC5883L_ADDRESS, &reg, 1, HAL_MAX_DELAY);
-  HAL_I2C_Master_Receive(hi2c, HMC5883L_ADDRESS, value, 1, HAL_MAX_DELAY);
-}
-
-void HMC5883L::MagDataOku(int16_t *x, int16_t *y, int16_t *z)
+void MyMag::MagDataOku(int16_t *x_s16, int16_t *y_s16, int16_t *z_s16)
 {
   uint8_t buffer[6];
-  HAL_I2C_Mem_Read(hi2c, HMC5883L_ADDRESS, HMC5883_REGISTER_MAG_OUT_X_H_M, I2C_MEMADD_SIZE_8BIT, buffer, 6, HAL_MAX_DELAY);
+  HAL_I2C_Mem_Read(hi2c, HMC5883L_ADDRESS, HMC5883_REGISTER_MAG_OUT_X_H_M, 1, buffer, 6, 100);
 
-  *x = (int16_t)((buffer[0] << 8) | buffer[1]);
-  *z = (int16_t)((buffer[2] << 8) | buffer[3]);
-  *y = (int16_t)((buffer[4] << 8) | buffer[5]);
+  *x_s16 = (int16_t)((buffer[0] << 8) | buffer[1]);
+  *z_s16 = (int16_t)((buffer[2] << 8) | buffer[3]);
+  *y_s16 = (int16_t)((buffer[4] << 8) | buffer[5]);
 }
-void HMC5883L::KalibreEt()
+void MyMag::KalibreEt()
 {
-    int16_t xRaw, yRaw, zRaw;
+    int16_t xEksen_s16, yEksen_s16,zEksen_s16;
     int16_t xMin = 3200, yMin = 3200;
     int16_t xMax = -3200, yMax = -3200;
 
     for (int i = 0; i < 1000; i++)
     {
-        MagDataOku(&xRaw, &yRaw, &zRaw);
+        MagDataOku(&xEksen_s16, &yEksen_s16, &zEksen_s16);
 
-        if (xRaw < xMin) xMin = xRaw;
-        if (xRaw > xMax) xMax = xRaw;
-        if (yRaw < yMin) yMin = yRaw;
-        if (yRaw > yMax) yMax = yRaw;
+        if (xEksen_s16 < xMin) xMin = xEksen_s16;
+        if (xEksen_s16 > xMax) xMax = xEksen_s16;
+        if (yEksen_s16 < yMin) yMin = yEksen_s16;
+        if (yEksen_s16 > yMax) yMax = yEksen_s16;
 
         HAL_Delay(10);
     }
 
-    xOffset = (xMax + xMin) / 2;
-    yOffset = (yMax + yMin) / 2;
+    xOffset_f = (xMax + xMin) / 2;
+    yOffset_f = (yMax + yMin) / 2;
 }
-float HMC5883L::HeadingOlustur()
+float* MyMag::HeadingOlustur()
 {
-	float xCalibrated, yCalibrated;
-	MagDataOku(&x,&y,&z);
+	float kalibreliX_f, kalibreliY_f;
+	MagDataOku(&x_s16,&y_s16,&z_s16);
 
-	xCalibrated = x - xOffset;
-	yCalibrated = y - yOffset;
+	kalibreliX_f = x_s16 - xOffset_f;
+	kalibreliY_f = y_s16 - yOffset_f;
 
-	heading = atan2(yCalibrated, xCalibrated);
+	//heading_f = atan2(kalibreliX_f, kalibreliY_f);
 
-	heading = atan2((y), (x));
-	if(heading < 0)
-		heading += 2*M_PI;
+	heading_f = atan2((y_s16), (x_s16));
+	if(heading_f < 0)
+		heading_f += 2*M_PI;
 
-	if(heading > 2*M_PI)
-		heading -= 2*M_PI;
+	if(heading_f > 2*M_PI)
+		heading_f -= 2*M_PI;
 
 
-	headingAcisi = heading * (180/M_PI);
+	headingAcisi_f = heading_f * (180/M_PI);
 
-	return headingAcisi;
+	return &headingAcisi_f;
 
 }

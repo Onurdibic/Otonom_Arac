@@ -23,7 +23,7 @@ MyImu::MyImu(I2C_HandleTypeDef *hi2c)
 void MyImu::DBC_MPU6500_Reset()
 {
 	data_u8 = RESET_BIT;
-	HAL_I2C_Mem_Write(hi2c, MPU6500_ADDRESS , PWR_MGMT_1_REG, 1, &data_u8, 1, 1000);
+	HAL_I2C_Mem_Write(hi2c, MPU6500_ADDRESS , PWR_MGMT_1_REG, 1, &data_u8, 1, 100);
 	HAL_Delay(100);
 }
 void MyImu::DBC_MPU6500_YAPILANDIR()
@@ -112,7 +112,7 @@ void MyImu::DBC_ACI_BULMA()
 {
 	DBC_DATA_OKU();//0.0014 0.000001066
 	//Ham Veri Iyilestirmeleri
-	gyroPitchAci_f += gyroEksen[0] * 0.000207; //65.5 * 4000 mikrosaniye
+	gyroPitchAci_f += gyroEksen[0] * 0.000207;
 	gyroRollAci_f += gyroEksen[1] * 0.000207;
 	gyroYawAci_f += gyroEksen[2] * 0.000207;
 

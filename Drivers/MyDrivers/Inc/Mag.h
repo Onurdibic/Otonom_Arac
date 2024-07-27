@@ -42,22 +42,19 @@ typedef enum
   HMC5883_MAGGAIN_8_1 = 0xE0  // +/- 8.1
 } hmc5883MagGain;
 
-class HMC5883L {
+class MyMag {
 public:
-  HMC5883L(I2C_HandleTypeDef *hi2c);
+  MyMag(I2C_HandleTypeDef *hi2c);
   void Yapilandir();
-  void MagDataOku(int16_t *x, int16_t *y, int16_t *z);
+  void MagDataOku(int16_t *x_s16, int16_t *y_s16, int16_t *z_s16);
   void KalibreEt();
-  float HeadingOlustur();
+  float* HeadingOlustur();
 
 private:
   I2C_HandleTypeDef *hi2c;
-  void registerYaz(uint8_t reg, uint8_t value);
-  void registerOku(uint8_t reg, uint8_t *value);
-  int16_t x, y, z;
-  float xOffset;
-  float yOffset;
-  float heading, headingAcisi;
+  int16_t x_s16, y_s16, z_s16;
+  float xOffset_f, yOffset_f;
+  float heading_f, headingAcisi_f;
 };
 
 

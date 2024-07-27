@@ -13,7 +13,6 @@ extern "C" {
 #endif
 
 #include "i2c.h"
-#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 

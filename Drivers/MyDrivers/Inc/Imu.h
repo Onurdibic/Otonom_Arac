@@ -14,7 +14,7 @@
 
 class MyImu {
 public:
-    MyImu(I2C_HandleTypeDef *hi2c1);
+    MyImu(I2C_HandleTypeDef *hi2c);
     void DBC_MPU6500_Reset();
     void DBC_MPU6500_YAPILANDIR();
     void DBC_ACC_OKU();
