@@ -3,4 +3,4 @@
 ../Drivers/MyDrivers/Src/Gps.cpp:24:6:void GPS::UartRxCpltCallback()	16	static
 ../Drivers/MyDrivers/Src/Gps.cpp:40:6:void GPS::GpsDataCek()	16	static
 ../Drivers/MyDrivers/Src/Gps.cpp:46:8:float* GPS::LatitudeAl()	16	static
-../Drivers/MyDrivers/Src/Gps.cpp:51:8:float* GPS::LongitudeAl()	16	static
+../Drivers/MyDrivers/Src/Gps.cpp:48:8:float* GPS::LongitudeAl()	16	static

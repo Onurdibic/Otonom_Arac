@@ -53,7 +53,7 @@ public:
 private:
   I2C_HandleTypeDef *hi2c;
   int16_t x_s16, y_s16, z_s16;
-  float xOffset_f, yOffset_f;
+  float xOffset_f, yOffset_f,zOffset_f;
   float heading_f, headingAcisi_f;
 };
 

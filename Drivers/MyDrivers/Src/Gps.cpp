@@ -39,17 +39,11 @@ void GPS::UartRxCpltCallback()
 
 void GPS::GpsDataCek()
 {
-	 latitude_f32 = gps_.latitude;
-	 longitude_f32 = gps_.longitude;
+	latitude_f32 = gps_.latitude;
+	longitude_f32 = gps_.longitude;
 }
 
-float* GPS::LatitudeAl()
-{
-    return &latitude_f32;
-}
+float* GPS::LatitudeAl(){return &latitude_f32;}
 
-float* GPS::LongitudeAl()
-{
-    return &longitude_f32;
-}
+float* GPS::LongitudeAl(){return &longitude_f32;}
 

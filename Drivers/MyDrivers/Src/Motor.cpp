@@ -70,9 +70,12 @@ int8_t* Motor::TurAl()
 {
     return &motorTur_u8;
 }
-Araba::Araba(Motor& olmotor,Motor& ormotor,Motor& almotor,Motor& armotor)
-		:olm(olmotor),orm(ormotor),alm(almotor),arm(armotor){}
 
+//Araba::Araba(Motor& olmotor,Motor& ormotor,Motor& almotor,Motor& armotor)
+	//	:olm(olmotor),orm(ormotor),alm(almotor),arm(armotor){}
+
+Araba::Araba(){}
+/*
 void Araba::duzGit()
 {
 	 olm.IleriGit();
@@ -93,4 +96,41 @@ void Araba::solGit()
     orm.IleriGit();
     alm.Dur();
     arm.IleriGit();
+}*/
+float Araba::mesafeBul(float guncelLat_f, float guncelLon_f, float gidilecekLat_f, float gidilecekLon_f)
+{
+	guncelLat_f = guncelLat_f * (M_PI / 180.0);
+	guncelLon_f = guncelLon_f * (M_PI / 180.0);
+	gidilecekLat_f = gidilecekLat_f * (M_PI / 180.0);
+	gidilecekLon_f = gidilecekLon_f * (M_PI / 180.0);
+
+	float latFark_f = gidilecekLat_f - guncelLat_f;
+	float lonFark_f = gidilecekLon_f - guncelLon_f;
+
+	    // Haversine formülü
+	float a = sin(latFark_f / 2) * sin(lonFark_f / 2) + cos(guncelLat_f) * cos(gidilecekLat_f) * sin(lonFark_f / 2) * sin(lonFark_f / 2);
+
+	float c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+	float mesafe_f = DUNYA_YARICAPI * c;
+
+	return mesafe_f;
+}
+float Araba::yonelimBul(float guncelLat_f, float guncelLon_f, float gidilecekLat_f, float gidilecekLon_f)
+{
+	guncelLat_f = guncelLat_f * (M_PI / 180.0);
+	guncelLon_f = guncelLon_f * (M_PI / 180.0);
+	gidilecekLat_f = gidilecekLat_f * (M_PI / 180.0);
+	gidilecekLon_f = gidilecekLon_f * (M_PI / 180.0);
+
+	float lonFark_f = gidilecekLon_f - guncelLon_f;
+
+    // Bearing formülü
+    float x = sin(lonFark_f) * cos(gidilecekLon_f);
+    float y = cos(guncelLat_f) * sin(gidilecekLat_f) - sin(guncelLat_f) * cos(gidilecekLat_f) * cos(lonFark_f);
+    float yonelim_f = atan2(x, y);
+
+    yonelim_f = yonelim_f * (180.0 / M_PI);
+
+    return fmod(yonelim_f + 360.0, 360.0);
 }

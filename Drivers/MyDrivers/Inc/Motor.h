@@ -9,7 +9,7 @@
 
 #include "stm32f4xx_hal.h"
 #include <math.h>
-
+#define DUNYA_YARICAPI 6371000.0
 class Motor
 {
 public:
@@ -38,17 +38,22 @@ private:
 
 };
 
-class Araba{
+class Araba
+{
 public:
-	Araba(Motor& olmotor,Motor& ormotor,Motor& almotor,Motor& armotor);
+
+	Araba();
+	//Araba(Motor& olmotor,Motor& ormotor,Motor& almotor,Motor& armotor);
 	void duzGit();
 	void sagGit();
 	void solGit();
+	float mesafeBul(float guncelLat_f, float guncelLon_f, float gidilecekLat_f, float gidilecekLon_f);
+	float yonelimBul(float guncelLat_f, float guncelLon_f, float gidilecekLat_f, float gidilecekLon_f);
 private:
-	Motor& olm;
-	Motor& orm;
-	Motor& alm;
-	Motor& arm;
+	//Motor& olm;
+	//Motor& orm;
+	//Motor& alm;
+	//Motor& arm;
 
 };
 

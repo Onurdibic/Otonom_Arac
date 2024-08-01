@@ -31,46 +31,43 @@ void Barometre::Yapilandir()
 	MD = (calibDatas[20] << 8) | calibDatas[21];
 }
 
-float Barometre::SicaklikOku()
+float *Barometre::SicaklikOku()
 {
-	UT = regSicaklikOku();
-	X1 = (UT - AC6) * AC5 / pow(2, 15);
-	X2 = (MC * pow(2, 11)) / (X1 + MD);
-	B5 = X1 + X2;
-	T = (B5 + 8) / pow(2, 4);
-    return T / 10.0;
+	 UT = regSicaklikOku();
+	 X1 = (UT - AC6) * AC5 >> 15;
+	 X2 = (MC << 11) / (X1 + MD);
+	 B5 = X1 + X2;
+	 T = ((B5 + 8) >> 4) / 10.0;
+
+    return &T ;
 }
 
 float Barometre::BasincOku(uint8_t oss)
 {
-    BasincHesapla(oss);
-    return P;
+	 UP = regBasincOku(oss);
+	 B6 = B5 - 4000;
+	 X1 = (B2 * ((B6 * B6) >> 12)) >> 11;
+	 X2 = (AC2 * B6) >> 11;
+	 X3 = X1 + X2;
+	 B3 = (((AC1 * 4 + X3) << oss) + 2) >> 2;
+	 X1 = (AC3 * B6) >> 13;
+	 X2 = (B1 * ((B6 * B6) >> 12)) >> 16;
+	 X3 = ((X1 + X2) + 2) >> 2;
+	 B4 = (AC4 * (uint32_t)(X3 + 32768)) >> 15;
+	 B7 = ((uint32_t)UP - B3) * (50000 >> oss);
+	 P = (B7 < 0x80000000) ? (B7 * 2) / B4 : (B7 / B4) * 2;
+	 X1 = (P / 256.0) * (P / 256.0);
+	 X1 = (X1 * 3038) >> 16;
+	 X2 = (-7357 * P)  / 65536.0;
+	 P += (X1 + X2 + 3791) >> 4;
+	 return P;
 }
 
-float Barometre::IrtifaOku(uint8_t oss)
+float *Barometre::IrtifaOku(uint8_t oss)
 {
     BasincOku(oss);
-    return 44330 * (1 - (pow((P / Po), 1 / 5.255)));
-}
-
-void Barometre::BasincHesapla(uint8_t oss)
-{
-    UP = regBasincOku(oss);
-    B6 = B5 - 4000;
-    X1 = (B2 * (B6 * B6 / pow(2, 12))) / pow(2, 11);
-    X2 = AC2 * B6 / pow(2, 11);
-    X3 = X1 + X2;
-    B3 = (((AC1 * 4 + X3) << oss) + 2) / 4;
-    X1 = AC3 * B6 / pow(2, 13);
-    X2 = (B1 * (B6 * B6 / pow(2, 12))) / pow(2, 16);
-    X3 = ((X1 + X2) + 2) / pow(2, 2);
-    B4 = AC4 * (unsigned long)(X3 + 32768) / pow(2, 15);
-    B7 = ((unsigned long)UP - B3) * (50000 >> oss);
-    P = (B7 < 0x80000000) ? (B7 * 2) / B4 : (B7 / B4) * 2;
-    X1 = (P / pow(2, 8)) * (P / pow(2, 8));
-    X1 = (X1 * 3038) / pow(2, 16);
-    X2 = (-7357 * P) / pow(2, 16);
-    P = P + (X1 + X2 + 3791) / pow(2, 4);
+    irtifa_f = (44330.0 * (1.0 - pow((P / 101325.0), 0.1903)));
+    return &irtifa_f;
 }
 
 uint16_t Barometre::regSicaklikOku()

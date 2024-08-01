@@ -43,6 +43,7 @@
      PA5   ------> SPI1_SCK
      PA6   ------> SPI1_MISO
      PA7   ------> SPI1_MOSI
+     PB10   ------> I2C2_SCL
      PC7   ------> I2S3_MCK
      PA9   ------> USB_OTG_FS_VBUS
      PA10   ------> USB_OTG_FS_ID
@@ -132,6 +133,14 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB10 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF4_I2C2;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PDPin PDPin PDPin PDPin
                            PDPin */

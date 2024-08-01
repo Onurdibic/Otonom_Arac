@@ -12,13 +12,24 @@
 
 #define maxGorev 10
 
-struct Gorev {
-    void (*gorev)();
-    int16_t ms_s16;
+class Gorev
+{
+public:
+    Gorev();
+    void GorevGir(void (*gorev)(), int16_t ms_s16);
+    void Calistir();
+    void BayrakDuzenle(bool value);
+    int16_t MsAl();
     bool Bayrak=false;
+
+private:
+    void (*gorev)();
+    int16_t ms_s16=0;
+
 };
 
-class Gorevyonetici {
+class Gorevyonetici
+{
 public:
     Gorevyonetici(TIM_TypeDef* pTimerAlan);
 
@@ -35,7 +46,6 @@ public:
 private:
     TIM_TypeDef* pTimerAlan;
 
-    void (*gorev)();
     Gorev gorevler[maxGorev];
     uint8_t gorevSayac = 0;
     uint16_t taskCounter_u16 = 0;

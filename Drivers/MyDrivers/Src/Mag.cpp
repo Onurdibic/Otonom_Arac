@@ -37,8 +37,9 @@ void MyMag::MagDataOku(int16_t *x_s16, int16_t *y_s16, int16_t *z_s16)
 void MyMag::KalibreEt()
 {
     int16_t xEksen_s16, yEksen_s16,zEksen_s16;
-    int16_t xMin = 3200, yMin = 3200;
-    int16_t xMax = -3200, yMax = -3200;
+    int16_t xMin = 3200, yMin = 3200,zMin = 3200;
+    int16_t xMax = -3200, yMax = -3200,zMax=-3200;
+
 
     for (int i = 0; i < 1000; i++)
     {
@@ -48,24 +49,36 @@ void MyMag::KalibreEt()
         if (xEksen_s16 > xMax) xMax = xEksen_s16;
         if (yEksen_s16 < yMin) yMin = yEksen_s16;
         if (yEksen_s16 > yMax) yMax = yEksen_s16;
+        if (zEksen_s16 < zMin) zMin = zEksen_s16;
+        if (zEksen_s16 > zMax) zMax = zEksen_s16;
 
         HAL_Delay(10);
     }
 
     xOffset_f = (xMax + xMin) / 2;
     yOffset_f = (yMax + yMin) / 2;
+    zOffset_f = (zMax + zMin) / 2;
 }
 float* MyMag::HeadingOlustur()
 {
-	float kalibreliX_f, kalibreliY_f;
+	float kalibreliX_f, kalibreliY_f,kalibreliZ_f;
+	float TiltliX_f,TiltliY_f;
+	float pitchRad,rollRad;
 	MagDataOku(&x_s16,&y_s16,&z_s16);
+
+	//pitchRad = pitch * (M_PI / 180.0);
+	//rollRad = roll * (M_PI / 180.0);
 
 	kalibreliX_f = x_s16 - xOffset_f;
 	kalibreliY_f = y_s16 - yOffset_f;
+	kalibreliZ_f = z_s16 - zOffset_f;
 
-	//heading_f = atan2(kalibreliX_f, kalibreliY_f);
+	//TiltliX_f = kalibreliX_f * cos(pitchRad) + kalibreliZ_f * sin(pitchRad);
+	//TiltliY_f = kalibreliX_f * sin(rollRad) * sin(pitchRad) + kalibreliY_f * cos(rollRad) - kalibreliZ_f * sin(rollRad) * cos(pitchRad);
 
-	heading_f = atan2((y_s16), (x_s16));
+	heading_f = atan2(kalibreliY_f, kalibreliX_f);
+
+	//heading_f = atan2((y_s16), (x_s16));
 	if(heading_f < 0)
 		heading_f += 2*M_PI;
 
@@ -78,3 +91,4 @@ float* MyMag::HeadingOlustur()
 	return &headingAcisi_f;
 
 }
+

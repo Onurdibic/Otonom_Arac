@@ -1,9 +1,9 @@
 ../Core/Src/program.cpp:49:6:void setup()	8	static
-../Core/Src/program.cpp:69:6:void loop()	8	static
-../Core/Src/program.cpp:83:6:void Gorevler1()	16	static
-../Core/Src/program.cpp:92:6:void Gorevler2()	24	static
-../Core/Src/program.cpp:103:6:void Gorevler3()	8	static
-../Core/Src/program.cpp:110:17:void TIM3_IRQHandler()	8	static
-../Core/Src/program.cpp:115:17:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	16	static
-../Core/Src/program.cpp:127:1:void __static_initialization_and_destruction_0(int, int)	32	static
-../Core/Src/program.cpp:127:1:cpp)	8	static
+../Core/Src/program.cpp:72:6:void loop()	24	static
+../Core/Src/program.cpp:92:6:void Gorevler1()	24	static
+../Core/Src/program.cpp:105:6:void Gorevler2()	24	static
+../Core/Src/program.cpp:117:6:void Gorevler3()	8	static
+../Core/Src/program.cpp:125:17:void TIM3_IRQHandler()	8	static
+../Core/Src/program.cpp:130:17:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	16	static
+../Core/Src/program.cpp:142:1:void __static_initialization_and_destruction_0(int, int)	32	static
+../Core/Src/program.cpp:142:1:cpp)	8	static

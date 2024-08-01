@@ -22,6 +22,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "program.h"
@@ -52,7 +53,7 @@ int16_t encoder_valuex;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-float temp, press, altitude;
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -74,7 +75,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+  HAL_Init(); // YOKLAMA , GÜN TARİH ARAYÜZE ,
 
   /* USER CODE BEGIN Init */
 
@@ -92,10 +93,8 @@ int main(void)
   MX_I2C1_Init();
   MX_USART3_UART_Init();
   MX_USART2_UART_Init();
-  MX_I2C3_Init();
   MX_TIM2_Init();
   MX_TIM1_Init();
-  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
   //HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   setup();

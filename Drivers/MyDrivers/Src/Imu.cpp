@@ -94,7 +94,7 @@ void MyImu::DBC_SICAKLIK_OKU()
 	HAL_I2C_Master_Transmit(hi2c, MPU6500_ADDRESS, sicaklikBuffer, 1, 10);
 	HAL_I2C_Master_Receive(hi2c, MPU6500_ADDRESS, sicaklikBuffer, 2, 10);
 	hamSicaklik_u16 = (sicaklikBuffer[0] << 8 | sicaklikBuffer[1]);
-	Sicaklik_f=((float)((float)hamSicaklik_u16 / 340.0)) + 36.53;
+	Sicaklik_f=((float)((float)hamSicaklik_u16 / 333.87)) + 21;
 }
 void MyImu::DBC_GYRO_OKU()
 {
@@ -129,20 +129,7 @@ void MyImu::DBC_ACI_BULMA()
 	rollAci_f = gyroRollAci_f * 0.9 + accRollAci_f * 0.1;
 }
 
-float* MyImu::PitchAl()
-{
-    return &pitchAcisi_f;
-}
-
-float* MyImu::RollAl()
-{
-    return &rollAci_f;
-}
-float* MyImu::YawAl()
-{
-    return &gyroYawAci_f;
-}
-float* MyImu::SicaklikAl()
-{
-    return &Sicaklik_f;
-}
+float* MyImu::PitchAl(){ return &pitchAcisi_f;}
+float* MyImu::RollAl(){return &rollAci_f;}
+float* MyImu::YawAl(){return &gyroYawAci_f;}
+float* MyImu::SicaklikAl(){return &Sicaklik_f;}

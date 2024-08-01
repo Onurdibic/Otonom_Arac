@@ -8,6 +8,6 @@
 ../Drivers/MyDrivers/Src/Imu.cpp:99:6:void MyImu::DBC_GYRO_OKU()	1
 ../Drivers/MyDrivers/Src/Imu.cpp:111:6:void MyImu::DBC_ACI_BULMA()	1
 ../Drivers/MyDrivers/Src/Imu.cpp:132:8:float* MyImu::PitchAl()	1
-../Drivers/MyDrivers/Src/Imu.cpp:137:8:float* MyImu::RollAl()	1
-../Drivers/MyDrivers/Src/Imu.cpp:141:8:float* MyImu::YawAl()	1
-../Drivers/MyDrivers/Src/Imu.cpp:145:8:float* MyImu::SicaklikAl()	1
+../Drivers/MyDrivers/Src/Imu.cpp:133:8:float* MyImu::RollAl()	1
+../Drivers/MyDrivers/Src/Imu.cpp:134:8:float* MyImu::YawAl()	1
+../Drivers/MyDrivers/Src/Imu.cpp:135:8:float* MyImu::SicaklikAl()	1
