@@ -1,6 +1,5 @@
 #include "gorevyonetici.h"
 
-
 Gorevyonetici::Gorevyonetici(TIM_TypeDef* pTimerAlan)
 {
     this->pTimerAlan = pTimerAlan;
@@ -10,24 +9,24 @@ Gorev::Gorev(){}
 
 void Gorevyonetici::GorevAl(void (*gorev)(), int16_t ms_s16)
 {
-	if (gorevSayac < maxGorev)
+	if (gorevSayac_u8 < maxGorev)
 	{
-		gorevler[gorevSayac].GorevGir(gorev, ms_s16);
-		gorevSayac++;
+		gorevler[gorevSayac_u8].GorevGir(gorev, ms_s16);
+		gorevSayac_u8++;
 	}
 }
-void Gorevyonetici::BayrakKaldir()
+void Gorevyonetici::GorevBayrakKaldir()
 {
-    pTimerAlan->SR &= ~(TIM_SR_UIF);
+    pTimerAlan->SR &= ~(TIM_SR_UIF);//kesme bayrağı sıfırla
     Counter_u16++;
-    for (int i = 0; i < gorevSayac; i++)
+    for (int i = 0; i < gorevSayac_u8; i++)
     {
 		if (0 == Counter_u16 % gorevler[i].MsAl())
 		{
 			gorevler[i].BayrakDuzenle(true);
 		}
      }
-    if (Counter_u16 % 1000 == 0)
+    if (Counter_u16 % 2000 == 0)
   	{
   	    Counter_u16=0;
   	}
@@ -36,7 +35,7 @@ void Gorevyonetici::BayrakKaldir()
 void Gorevyonetici::GorevCalistir()
 {
 
-	for (int i = 0; i < gorevSayac; i++)
+	for (int i = 0; i < gorevSayac_u8; i++)
 	{
 		if (gorevler[i].Bayrak)
 	    {
@@ -87,14 +86,6 @@ void Gorev::Calistir()
     }
 }
 
-void Gorev::BayrakDuzenle(bool value)
-{
-    Bayrak = value;
-}
+void Gorev::BayrakDuzenle(bool value){Bayrak = value;}
 
-
-
-int16_t Gorev::MsAl()
-{
-    return ms_s16;
-}
+int16_t Gorev::MsAl(){return ms_s16;}

@@ -75,7 +75,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init(); // YOKLAMA , GÜN TARİH ARAYÜZE ,
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -96,7 +96,7 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  //HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+
   setup();
 
 

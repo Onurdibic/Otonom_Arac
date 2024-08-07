@@ -1,9 +1,12 @@
-../Core/Src/program.cpp:49:6:void setup()	8	static
-../Core/Src/program.cpp:72:6:void loop()	24	static
-../Core/Src/program.cpp:92:6:void Gorevler1()	24	static
-../Core/Src/program.cpp:105:6:void Gorevler2()	24	static
-../Core/Src/program.cpp:117:6:void Gorevler3()	8	static
-../Core/Src/program.cpp:125:17:void TIM3_IRQHandler()	8	static
-../Core/Src/program.cpp:130:17:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	16	static
-../Core/Src/program.cpp:142:1:void __static_initialization_and_destruction_0(int, int)	32	static
-../Core/Src/program.cpp:142:1:cpp)	8	static
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/c++/11.3.1/bits/std_abs.h:75:3:constexpr float std::abs(float)	16	static
+../Core/Src/program.cpp:74:6:void setup()	8	static
+../Core/Src/program.cpp:105:6:void loop()	8	static
+../Core/Src/program.cpp:132:6:void GpsGorev()	24	static
+../Core/Src/program.cpp:143:6:void ImuGorev()	24	static
+../Core/Src/program.cpp:155:6:void Gorevler4()	8	static
+../Core/Src/program.cpp:162:6:void YonelmeGorev()	32	static
+../Core/Src/program.cpp:245:6:void ArayuzTask()	8	static
+../Core/Src/program.cpp:254:17:void TIM3_IRQHandler()	8	static
+../Core/Src/program.cpp:259:17:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	16	static
+../Core/Src/program.cpp:269:1:void __static_initialization_and_destruction_0(int, int)	32	static
+../Core/Src/program.cpp:269:1:cpp)	8	static

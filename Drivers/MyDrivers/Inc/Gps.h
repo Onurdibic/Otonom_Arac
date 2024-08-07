@@ -24,7 +24,7 @@ public:
 private:
     UART_HandleTypeDef* huart_;
     lwgps_t gps_;
-    uint8_t rxBuffer_[128];
+    uint8_t rxBuffer_u8[128];
     uint8_t rxIndex_u8;
     uint8_t rxData_u8;
     float latitude_f32;

@@ -7,28 +7,28 @@
 #include "Barometre.h"
 #include <math.h>
 
-Barometre::Barometre(I2C_HandleTypeDef* hi2c, uint8_t address)
+Barometre::Barometre(I2C_HandleTypeDef* hi2c, uint8_t baroAdres)
 {
     this->hi2c=hi2c;
-	this->address=address;
+	this->baroAdres=baroAdres;
 	T=0;
 	P=0;
 }
 
 void Barometre::Yapilandir()
 {
-	HAL_I2C_Mem_Read(hi2c, address, 0xAA, 1, calibDatas, 22, 100);
-	AC1 = (calibDatas[0] << 8) | calibDatas[1];
-	AC2 = (calibDatas[2] << 8) | calibDatas[3];
-	AC3 = (calibDatas[4] << 8) | calibDatas[5];
-	AC4 = (calibDatas[6] << 8) | calibDatas[7];
-	AC5 = (calibDatas[8] << 8) | calibDatas[9];
-	AC6 =(calibDatas[10] << 8) | calibDatas[11];
-	B1 = (calibDatas[12] << 8) | calibDatas[13];
-	B2 = (calibDatas[14] << 8) | calibDatas[15];
-	MB = (calibDatas[16] << 8) | calibDatas[17];
-	MC = (calibDatas[18] << 8) | calibDatas[19];
-	MD = (calibDatas[20] << 8) | calibDatas[21];
+	HAL_I2C_Mem_Read(hi2c, baroAdres, 0xAA, 1, hamDatalar, 22, 100);
+	AC1 = (hamDatalar[0] << 8) | hamDatalar[1];
+	AC2 = (hamDatalar[2] << 8) | hamDatalar[3];
+	AC3 = (hamDatalar[4] << 8) | hamDatalar[5];
+	AC4 = (hamDatalar[6] << 8) | hamDatalar[7];
+	AC5 = (hamDatalar[8] << 8) | hamDatalar[9];
+	AC6 =(hamDatalar[10] << 8) | hamDatalar[11];
+	B1 = (hamDatalar[12] << 8) | hamDatalar[13];
+	B2 = (hamDatalar[14] << 8) | hamDatalar[15];
+	MB = (hamDatalar[16] << 8) | hamDatalar[17];
+	MC = (hamDatalar[18] << 8) | hamDatalar[19];
+	MD = (hamDatalar[20] << 8) | hamDatalar[21];
 }
 
 float *Barometre::SicaklikOku()
@@ -73,25 +73,25 @@ float *Barometre::IrtifaOku(uint8_t oss)
 uint16_t Barometre::regSicaklikOku()
 {
     data = 0x2E;
-    uint8_t tempRAW[2] = {0};
+    uint8_t hamSicaklik[2] = {0};
 
-    writeAndRead(tempRAW, data, 'T', 4);
-    return ((tempRAW[0] << 8) | tempRAW[1]);
+    writeAndRead(hamSicaklik, data, 'T', 4);
+    return ((hamSicaklik[0] << 8) | hamSicaklik[1]);
 }
 
 uint16_t Barometre::regBasincOku(uint8_t oss)
 {
     data = 0x34 + (oss << 6);
-    uint8_t pressRaw[3] = {0};
+    uint8_t hamBasinc[3] = {0};
 
-    writeAndRead(pressRaw, data, 'P', oss);
-    return (((pressRaw[0] << 16) + (pressRaw[1] << 8) + pressRaw[2]) >> (8 - oss));
+    writeAndRead(hamBasinc, data, 'P', oss);
+    return (((hamBasinc[0] << 16) + (hamBasinc[1] << 8) + hamBasinc[2]) >> (8 - oss));
 }
 
 void Barometre::writeAndRead(uint8_t* raw, uint8_t data, char sens, uint8_t oss)
 {
     uint8_t size;
-    HAL_I2C_Mem_Write(hi2c, address, 0xF4, 1, &data, 1, 100);
+    HAL_I2C_Mem_Write(hi2c, baroAdres, 0xF4, 1, &data, 1, 100);
 
     if (sens == 'P')
     {
@@ -107,5 +107,5 @@ void Barometre::writeAndRead(uint8_t* raw, uint8_t data, char sens, uint8_t oss)
         HAL_Delay(5);
     }
 
-    HAL_I2C_Mem_Read(hi2c, address, 0xF6, 1, raw, size, 100);
+    HAL_I2C_Mem_Read(hi2c, baroAdres, 0xF6, 1, raw, size, 100);
 }

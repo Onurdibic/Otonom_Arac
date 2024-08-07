@@ -29,18 +29,10 @@ Paket::Paket(uint8_t baslik1_u8, uint8_t baslik2_u8, uint8_t paketTipi_u8, uint8
 	this->baslik2_u8=baslik2_u8;
 	this->paketTipi_u8=paketTipi_u8;
 	this->dataBoyutu_u8=dataBoyutu_u8;
-	this->latitude=0;
-	this->longitude=0;
-	this->pitch=0;
-	this->roll=0;
-	this->heading=0;
-	this->sicaklik=0;
-    memset(gpspaket, 0, sizeof(gpspaket));
-    memset(imupaket, 0, sizeof(imupaket));
 }
 void Paket::PaketKesmeInit()
 {
-	HAL_UART_Receive_IT(huart, ArayuzData, sizeof(ArayuzData));
+	HAL_UART_Receive_IT(huart, &ArayuzData,1);
 }
 void Paket::GpsPaketOlustur(float latitude,float longitude,float altitude,float derece)
 {
@@ -73,20 +65,17 @@ void Paket::ImuPaketOlustur(float pitch,float roll,float heading,float sicaklik)
     this->roll = roll;
     this->heading = heading;
     this-> sicaklik = sicaklik;
-
     floatToBytes(&pitch, pitchBytes_u8);
     floatToBytes(&roll, rollBytes_u8);
     floatToBytes(&heading, headingBytes_u8);
     floatToBytes(&sicaklik, sicaklikBytes_u8);
-
     memcpy(imupaket + 4, pitchBytes_u8, 4);
     memcpy(imupaket + 8, rollBytes_u8, 4);
     memcpy(imupaket + 12, headingBytes_u8, 4);
     memcpy(imupaket + 16, sicaklikBytes_u8, 4);
-
     imupaket[20] = CRC8Hesaplama(imupaket, 4,20);
 }
-void Paket::PaketOlusturveGonder(uint8_t b,uint8_t o,uint8_t s)
+void Paket::VersiyonPaketGonder(uint8_t b,uint8_t o,uint8_t s)
 {
 	versiyonpaket[0] = 0x12;
 	versiyonpaket[1] = 0x34;
@@ -97,7 +86,6 @@ void Paket::PaketOlusturveGonder(uint8_t b,uint8_t o,uint8_t s)
 	versiyonpaket[6] = s;
 	versiyonpaket[7] = CRC8Hesaplama(versiyonpaket, 4,7);
 	HAL_UART_Transmit(huart, versiyonpaket, sizeof(versiyonpaket), 1000);
-
 }
 void Paket::YoklamaPaketGonder()
 {
@@ -123,106 +111,112 @@ void Paket::imuPaketCagir(uint8_t *kopyaDizi)
 
 void Paket::BayrakKaldir()
 {
-	PaketCozBayrak=true;
+	if (ArayuzData!=0xFF)
+	{
+		ArayuzBuffer_u8[ArayuzIndex_u8] = ArayuzData;
+		ArayuzIndex_u8 = (ArayuzIndex_u8 + 1) % sizeof(ArayuzBuffer_u8);
+	}
+	else
+	{
+		PaketCozBayrak=true;
+	}
+	 HAL_UART_Receive_IT(huart, &ArayuzData, 1);
 }
 void Paket::PaketCoz()
 {
     Durumlar Durum = Baslik1Coz;
     Paketler Paket = VERSIYON;
-    bool islem=true;
+    bool islem = true;
+
     while (islem)
     {
         switch (Durum)
         {
             case Baslik1Coz:
-                if (ArayuzData[startIndex_u32] == 0x12 && ArayuzData[startIndex_u32] != 0)
+            	if (ArayuzBuffer_u8[startIndex_u32] == 0x12 && ArayuzBuffer_u8[startIndex_u32] != 0)
                 {
                     Durum = Baslik2Coz;
                 }
-                startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
+                startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzBuffer_u8);
                 break;
 
             case Baslik2Coz:
-                if (ArayuzData[startIndex_u32] == 0x34 && ArayuzData[startIndex_u32] != 0)
+                if (ArayuzBuffer_u8[startIndex_u32] == 0x34 && ArayuzBuffer_u8[startIndex_u32] != 0)
                 {
                     Durum = PaketTuruSec;
-                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzBuffer_u8);
                 }
                 else
                 {
                     Durum = Baslik1Coz;
-                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzBuffer_u8);
                 }
                 break;
 
             case PaketTuruSec:
-                if (ArayuzData[startIndex_u32] != 0)
+                if (ArayuzBuffer_u8[startIndex_u32] != 0)
                 {
-                    Paket = (Paketler)ArayuzData[startIndex_u32];
+                    Paket = (Paketler)ArayuzBuffer_u8[startIndex_u32];
                     Durum = DataBoyutuAl;
-                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzBuffer_u8);
                 }
                 else
                 {
                     Durum = Baslik1Coz;
-                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzBuffer_u8);
                 }
                 break;
 
             case DataBoyutuAl:
-                if (ArayuzData[startIndex_u32] != 0)
+                if (ArayuzBuffer_u8[startIndex_u32] != 0)
                 {
-                    dataLength_s16 = ArayuzData[startIndex_u32];
+                    dataLength_s16 = ArayuzBuffer_u8[startIndex_u32];
                     Durum = DataOku;
-                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzBuffer_u8);
                 }
                 else
                 {
                     Durum = Baslik1Coz;
-                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzData);
+                    startIndex_u32 = (startIndex_u32 + 1) % sizeof(ArayuzBuffer_u8);
                 }
                 break;
 
             case DataOku:
                 if (Paket == GPS && dataLength_s16 == 8)
                 {
-                    ArayuzEnlem_f = bytesToFloat(ArayuzData, startIndex_u32);
-                    ArayuzBoylam_f = bytesToFloat(ArayuzData, (startIndex_u32 + 4) % sizeof(ArayuzData));
-                    MesafeBayrak=true;
+                    ArayuzEnlem_f = bytesToFloat(ArayuzBuffer_u8, startIndex_u32);
+                    ArayuzBoylam_f = bytesToFloat(ArayuzBuffer_u8, (startIndex_u32 + 4) % sizeof(ArayuzBuffer_u8));
+                    GidilecekNoktaBayrak = true;
 
-                    if (ArayuzEnlem_f != 0 && ArayuzBoylam_f != 0)
-                    {
-
-                    }
-
-                    startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzData);
+                    startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8);
                     Durum = Baslik1Coz;
-                    islem=false;
+                    islem = false;
                 }
                 else if (Paket == VERSIYON && dataLength_s16 == 8)
                 {
+                    VersiyonPaketGonder(0, 0, 6);
 
-                	PaketOlusturveGonder(0,0,5);
-                	startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzData);
-                	Durum = Baslik1Coz;
-                	islem=false;
+                    startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8);
+                    Durum = Baslik1Coz;
+                    islem = false;
                 }
                 else if (Paket == YOKLAMA && dataLength_s16 == 8)
                 {
-                	YoklamaPaketGonder();
-                	islem=false;
+                    YoklamaPaketGonder();
+                    startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8);
+                    Durum = Baslik1Coz;
+                    islem = false;
                 }
                 else
                 {
-                	Durum = Baslik1Coz;
-                	islem=false;
+                    Durum = Baslik1Coz;
+                    islem = false;
                 }
                 break;
         }
     }
-
-    HAL_UART_Receive_IT(huart, ArayuzData, sizeof(ArayuzData));
 }
+
 float *Paket::ArayuzLatAl(){return &ArayuzEnlem_f;}
 float *Paket::ArayuzLonAl(){return &ArayuzBoylam_f;}
 
@@ -249,14 +243,15 @@ uint8_t Paket::CRC8Hesaplama(uint8_t *data, uint8_t start ,uint8_t end)
     return crc;
 }
 
-float Paket::bytesToFloat(const uint8_t* buffer, int32_t startIndex) {
-   intBits_u32 =(buffer[(startIndex + 3) % 120] << 24) |
-    		(buffer[(startIndex + 2) % 120] << 16) |
-			(buffer[(startIndex + 1) % 120] << 8)  |
-			(buffer[(startIndex + 0) % 120] << 0)  ;
+float Paket::bytesToFloat(const uint8_t* buffer_u8, int32_t startIndex_s32)
+{
+	uint32_t intBits_u32 =(buffer_u8[(startIndex_s32 + 3) % 120] << 24) |
+    					(buffer_u8[(startIndex_s32 + 2) % 120] << 16) |
+						(buffer_u8[(startIndex_s32 + 1) % 120] << 8)  |
+						(buffer_u8[(startIndex_s32 + 0) % 120] << 0)  ;
 
-    memcpy(&sonuc, &intBits_u32, sizeof(sonuc));
-    return sonuc;
+    memcpy(&floatsonuc_f, &intBits_u32, sizeof(floatsonuc_f));
+    return floatsonuc_f;
 }
 
 uint32_t Paket::floatToBytes(float *Deger_f, uint8_t* bytes)

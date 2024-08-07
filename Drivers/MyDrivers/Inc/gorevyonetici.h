@@ -34,7 +34,7 @@ public:
     Gorevyonetici(TIM_TypeDef* pTimerAlan);
 
     void GorevAl(void (*gorev)(), int16_t ms_s16);
-    void BayrakKaldir();
+    void GorevBayrakKaldir();
     void GorevCalistir();
     void IRQHandler_();
 
@@ -47,7 +47,7 @@ private:
     TIM_TypeDef* pTimerAlan;
 
     Gorev gorevler[maxGorev];
-    uint8_t gorevSayac = 0;
+    uint8_t gorevSayac_u8 = 0;
     uint16_t taskCounter_u16 = 0;
     uint16_t Counter_u16=0;
 

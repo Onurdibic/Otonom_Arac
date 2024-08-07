@@ -17,12 +17,14 @@ Motor::Motor(TIM_HandleTypeDef* htim_pwm, TIM_HandleTypeDef* htim_enc, GPIO_Type
 void Motor::Yapilandir()
 {
     HAL_TIM_PWM_Start(htim_pwm_, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(htim_pwm_, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(htim_pwm_, TIM_CHANNEL_4);
     HAL_TIM_Encoder_Start(htim_enc_, TIM_CHANNEL_ALL);
     __HAL_TIM_SET_COUNTER(htim_enc_, 0);
 }
-void Motor::PWM(uint16_t pwmDeger_u16)
+void Motor::PWM(uint16_t pwmDeger_u16,uint32_t channel_u32)
 {
-	__HAL_TIM_SET_COMPARE(htim_pwm_, TIM_CHANNEL_1, pwmDeger_u16); // (0-1000)
+	__HAL_TIM_SET_COMPARE(htim_pwm_, channel_u32, pwmDeger_u16); // (0-1000)
 }
 void Motor::AciBul()
 {
@@ -71,32 +73,41 @@ int8_t* Motor::TurAl()
     return &motorTur_u8;
 }
 
-//Araba::Araba(Motor& olmotor,Motor& ormotor,Motor& almotor,Motor& armotor)
-	//	:olm(olmotor),orm(ormotor),alm(almotor),arm(armotor){}
+Araba::Araba(Motor& lmotor, Motor& rmotor) : lm(lmotor), rm(rmotor)
+{
 
-Araba::Araba(){}
-/*
+}
+void Araba::Dur()
+{
+	lm.Dur();
+	rm.Dur();
+}
 void Araba::duzGit()
 {
-	 olm.IleriGit();
-	 orm.IleriGit();
-	 alm.IleriGit();
-	 arm.IleriGit();
+	 lm.IleriGit();
+	 rm.IleriGit();
 }
 void Araba::sagGit()
 {
-	  olm.IleriGit();
-	  orm.Dur();
-	  alm.IleriGit();
-	  arm.Dur();
+	lm.IleriGit();
+	rm.Dur();
 }
 void Araba::solGit()
 {
-    olm.Dur();
-    orm.IleriGit();
-    alm.Dur();
-    arm.IleriGit();
-}*/
+    lm.Dur();
+    rm.IleriGit();
+}
+void Araba::kendiSagaDon()
+{
+	rm.GeriGit();
+	lm.IleriGit();
+}
+void Araba::kendiSolaDon()
+{
+	rm.IleriGit();
+	lm.GeriGit();
+}
+
 float Araba::mesafeBul(float guncelLat_f, float guncelLon_f, float gidilecekLat_f, float gidilecekLon_f)
 {
 	guncelLat_f = guncelLat_f * (M_PI / 180.0);
@@ -108,7 +119,7 @@ float Araba::mesafeBul(float guncelLat_f, float guncelLon_f, float gidilecekLat_
 	float lonFark_f = gidilecekLon_f - guncelLon_f;
 
 	    // Haversine formülü
-	float a = sin(latFark_f / 2) * sin(lonFark_f / 2) + cos(guncelLat_f) * cos(gidilecekLat_f) * sin(lonFark_f / 2) * sin(lonFark_f / 2);
+	float a = sin(latFark_f / 2) * sin(latFark_f / 2) + cos(guncelLat_f) * cos(gidilecekLat_f) * sin(lonFark_f / 2) * sin(lonFark_f / 2);
 
 	float c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
@@ -126,7 +137,7 @@ float Araba::yonelimBul(float guncelLat_f, float guncelLon_f, float gidilecekLat
 	float lonFark_f = gidilecekLon_f - guncelLon_f;
 
     // Bearing formülü
-    float x = sin(lonFark_f) * cos(gidilecekLon_f);
+    float x = sin(lonFark_f) * cos(gidilecekLat_f);
     float y = cos(guncelLat_f) * sin(gidilecekLat_f) - sin(guncelLat_f) * cos(gidilecekLat_f) * cos(lonFark_f);
     float yonelim_f = atan2(x, y);
 

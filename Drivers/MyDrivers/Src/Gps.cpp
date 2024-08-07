@@ -23,13 +23,13 @@ void GPS::Yapilandir()
 
 void GPS::UartRxCpltCallback()
 {
-    if (rxData_u8 != '\n' && rxIndex_u8 < sizeof(rxBuffer_))
+    if (rxData_u8 != '\n' && rxIndex_u8 < sizeof(rxBuffer_u8))
     {
-        rxBuffer_[rxIndex_u8++] = rxData_u8;
+        rxBuffer_u8[rxIndex_u8++] = rxData_u8;
     }
     else
     {
-        lwgps_process(&gps_, rxBuffer_, rxIndex_u8 + 1);
+        lwgps_process(&gps_, rxBuffer_u8, rxIndex_u8 + 1);
         GpsDataCek();
         rxIndex_u8 = 0;
         rxData_u8 = 0;

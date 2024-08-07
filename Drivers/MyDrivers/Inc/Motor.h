@@ -15,7 +15,7 @@ class Motor
 public:
 	Motor(TIM_HandleTypeDef* htim_pwm, TIM_HandleTypeDef* htim_enc, GPIO_TypeDef* in1_port, uint16_t in1_pin, GPIO_TypeDef* in2_port, uint16_t in2_pin);
 	void Yapilandir();
-	void PWM(uint16_t pwmDeger_u16);
+	void PWM(uint16_t pwmDeger_u16,uint32_t channel_u32);
 	void AciBul();
 	void IleriGit();
 	void GeriGit();
@@ -42,18 +42,19 @@ class Araba
 {
 public:
 
-	Araba();
-	//Araba(Motor& olmotor,Motor& ormotor,Motor& almotor,Motor& armotor);
+	//Araba();
+	Araba(Motor& lmotor,Motor& rmotor);
+	void Dur();
 	void duzGit();
 	void sagGit();
 	void solGit();
+	void kendiSagaDon();
+	void kendiSolaDon();
 	float mesafeBul(float guncelLat_f, float guncelLon_f, float gidilecekLat_f, float gidilecekLon_f);
 	float yonelimBul(float guncelLat_f, float guncelLon_f, float gidilecekLat_f, float gidilecekLon_f);
 private:
-	//Motor& olm;
-	//Motor& orm;
-	//Motor& alm;
-	//Motor& arm;
+	Motor& lm;
+	Motor& rm;
 
 };
 
