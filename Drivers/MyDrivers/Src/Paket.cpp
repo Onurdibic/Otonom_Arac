@@ -194,7 +194,7 @@ void Paket::PaketCoz()
                 }
                 else if (Paket == VERSIYON && dataLength_s16 == 8)
                 {
-                    VersiyonPaketGonder(0, 0, 6);
+                    VersiyonPaketGonder(0, 0, 8);
 
                     startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8);
                     Durum = Baslik1Coz;

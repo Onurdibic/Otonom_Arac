@@ -10,11 +10,15 @@
 
 #include "stm32f4xx_hal.h"
 #include "stdint.h"
+#include "Kalman.h"
 #include <cmath>
 
-class MyImu {
+class MyImu
+{
 public:
     MyImu(I2C_HandleTypeDef *hi2c);
+    KalmanFiltresi kalman;
+
     void DBC_MPU6500_Reset();
     void DBC_MPU6500_YAPILANDIR();
     void DBC_ACC_OKU();
@@ -29,6 +33,7 @@ public:
     float* SicaklikAl();
 private:
     I2C_HandleTypeDef *hi2c;
+
     uint8_t data_u8;
     int16_t gyroEksen[3], accEksen[3];
     float gyroHesap[3];

@@ -14,6 +14,7 @@
 "./Drivers/MyDrivers/Src/Barometre.o"
 "./Drivers/MyDrivers/Src/Gps.o"
 "./Drivers/MyDrivers/Src/Imu.o"
+"./Drivers/MyDrivers/Src/Kalman.o"
 "./Drivers/MyDrivers/Src/Mag.o"
 "./Drivers/MyDrivers/Src/Motor.o"
 "./Drivers/MyDrivers/Src/Paket.o"

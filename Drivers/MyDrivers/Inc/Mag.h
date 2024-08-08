@@ -48,7 +48,7 @@ public:
   void Yapilandir();
   void MagDataOku(int16_t *x_s16, int16_t *y_s16, int16_t *z_s16);
   void KalibreEt();
-  float* HeadingOlustur();
+  float* HeadingOlustur(float pitch, float roll);
 
 private:
   I2C_HandleTypeDef *hi2c;

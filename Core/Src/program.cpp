@@ -17,6 +17,7 @@
 #include "tim.h"
 #include "Motor.h"
 #include "Barometre.h"
+#include "Nesneler.h"
 /************************Degiskenler************************/
 float Kp = 50;
 float hata = 0;
@@ -32,6 +33,7 @@ float pitch;
 float roll;
 float yaw;
 float heading;
+float irtifa;
 float gidilecekMesafe_f=0;
 float donulecekAci_f =0;
 float baslangicHatasi=0;
@@ -47,23 +49,6 @@ enum ArabaDurumlar
 	Ilerle,
 	Var
 };
-/*************************Nesneler**************************/
-//Uart uart3(USART3);
-
-Timer timer3(TIM3);
-//Timer timer2(TIM2);
-Gorevyonetici gorev(TIM3);
-MyImu imu(&hi2c1);
-GPS gps(&huart2);
-MyMag mag(&hi2c1);
-Barometre barometre(&hi2c1, 0xEE);
-Motor motorSag(&htim2, &htim1, GPIOD, GPIO_PIN_1, GPIOD, GPIO_PIN_2);
-Motor motorSol(&htim2, &htim1, GPIOB, GPIO_PIN_4, GPIOB, GPIO_PIN_5);
-
-Paket GpsPaket(0x12, 0x34, 0x01, 0x11); //veri boyutu 17
-Paket ImuPaket(0x12, 0x34, 0x02, 0x11);//veri boyutu 17
-Paket ArayuzPaket(&huart3);
-Araba araba(motorSol,motorSag);
 /*****************Fonksiyon Bildirimleri********************/
 void GpsGorev();
 void ImuGorev();
@@ -92,7 +77,7 @@ void setup()
 	GPIOD->ODR ^= GPIO_PIN_12;
 	HAL_Delay(2000);
 	imu.DBC_GYRO_OFSET();
-	gorev.GorevAl(ImuGorev,25);
+	gorev.GorevAl(ImuGorev,30);
 	gorev.GorevAl(ArayuzTask,100);
 	gorev.GorevAl(YonelmeGorev,500);
 	gorev.GorevAl(GpsGorev,1000);
@@ -109,6 +94,7 @@ void loop()
 	//aci=*motor1.AciAl();
 
 	gorev.GorevCalistir();
+
 	if(ArayuzPaket.GidilecekNoktaBayrak)
 	{
 		if(solaDonbayrak==true)
@@ -134,6 +120,8 @@ void GpsGorev()
 	GPIOD->ODR ^= GPIO_PIN_12;
 	GpsPaket.GpsPaketOlustur(*gps.LatitudeAl(),*gps.LongitudeAl(),*barometre.IrtifaOku(0),*barometre.SicaklikOku());
 	GpsPaket.gpsPaketCagir(GpsDataPacket);
+	ImuPaket.ImuPaketOlustur(*imu.PitchAl(), *imu.RollAl(), *mag.HeadingOlustur(pitch,roll), *imu.SicaklikAl());
+	ImuPaket.imuPaketCagir(ImuDataPacket);
 	if(ArayuzPaket.YoklamaFlag)
 	{
 		HAL_UART_Transmit(&huart3, GpsDataPacket, sizeof(GpsDataPacket), 1000);
@@ -148,17 +136,10 @@ void ImuGorev()
 	pitch=*imu.PitchAl();
 	roll=*imu.RollAl();
 	yaw=*imu.YawAl();
-	heading = *mag.HeadingOlustur();
-	ImuPaket.ImuPaketOlustur(*imu.PitchAl(), *imu.RollAl(), *mag.HeadingOlustur(), *imu.SicaklikAl());
-	ImuPaket.imuPaketCagir(ImuDataPacket);
+	heading =*mag.HeadingOlustur(pitch,roll);
+	irtifa=*barometre.IrtifaOku(0);
 }
-void Gorevler4()
-{
-	if(ArayuzPaket.YoklamaFlag)
-	{
-		//HAL_UART_Transmit(&huart3, ImuDataPacket, sizeof(ImuDataPacket), 1000);
-	}
-}
+
 void YonelmeGorev()
 {
     ArabaDurumlar Durum= MesafeBul;
@@ -221,7 +202,7 @@ void YonelmeGorev()
 								sagaDonbayrak=true;
 							}
 
-							heading = *mag.HeadingOlustur();  // heading güncelleniyor
+							heading = *mag.HeadingOlustur(pitch,roll);  // heading güncelleniyor
 						}
 						else
 						{

@@ -2,4 +2,4 @@
 ../Drivers/MyDrivers/Src/Mag.cpp:13:6:void MyMag::Yapilandir()	40	static
 ../Drivers/MyDrivers/Src/Mag.cpp:28:6:void MyMag::MagDataOku(int16_t*, int16_t*, int16_t*)	48	static
 ../Drivers/MyDrivers/Src/Mag.cpp:37:6:void MyMag::KalibreEt()	40	static
-../Drivers/MyDrivers/Src/Mag.cpp:62:8:float* MyMag::HeadingOlustur()	40	static
+../Drivers/MyDrivers/Src/Mag.cpp:62:8:float* MyMag::HeadingOlustur(float, float)	56	static

@@ -59,26 +59,24 @@ void MyMag::KalibreEt()
     yOffset_f = (yMax + yMin) / 2;
     zOffset_f = (zMax + zMin) / 2;
 }
-float* MyMag::HeadingOlustur()
+float* MyMag::HeadingOlustur(float pitch, float roll)
 {
 	float kalibreliX_f, kalibreliY_f,kalibreliZ_f;
 	float TiltliX_f,TiltliY_f;
 	float pitchRad,rollRad;
 	MagDataOku(&x_s16,&y_s16,&z_s16);
 
-	//pitchRad = pitch * (M_PI / 180.0);
-	//rollRad = roll * (M_PI / 180.0);
+	pitchRad = pitch * (M_PI / 180.0);
+	rollRad = roll * (M_PI / 180.0);
 
 	kalibreliX_f = x_s16 - xOffset_f;
 	kalibreliY_f = y_s16 - yOffset_f;
 	kalibreliZ_f = z_s16 - zOffset_f;
-
 	//TiltliX_f = kalibreliX_f * cos(pitchRad) + kalibreliZ_f * sin(pitchRad);
-	//TiltliY_f = kalibreliX_f * sin(rollRad) * sin(pitchRad) + kalibreliY_f * cos(rollRad) - kalibreliZ_f * sin(rollRad) * cos(pitchRad);
+	//TiltliY_f = kalibreliY_f * cos(rollRad) - kalibreliZ_f * sin(rollRad);
 
 	heading_f = atan2(kalibreliY_f, kalibreliX_f);
 
-	//heading_f = atan2((y_s16), (x_s16));
 	if(heading_f < 0)
 		heading_f += 2*M_PI;
 

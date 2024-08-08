@@ -6,7 +6,6 @@
  */
 #include "Imu.h"
 
-
 #define PWR_MGMT_1_REG 0X6B
 #define SMPLRT_DIV_REG 0X19
 #define GYRO_CNFG_REG 0X1B
@@ -16,9 +15,7 @@
 #define RESET_BIT 0x80
 
 MyImu::MyImu(I2C_HandleTypeDef *hi2c)
-{
-	this->hi2c=hi2c;
-}
+    : hi2c(hi2c), kalman(0.1, 0.2, 10){}
 
 void MyImu::DBC_MPU6500_Reset()
 {
@@ -74,6 +71,12 @@ void MyImu::DBC_DATA_OKU()
     gyroEksen[0] -= gyroHesap[0];
     gyroEksen[1] -= gyroHesap[1];
     gyroEksen[2] -= gyroHesap[2];
+    for(int i=0;i<3;i++)
+    {
+    	kalman.guncelle(accEksen[i]);
+    	kalman.guncelle(gyroEksen[i]);
+    }
+
 }
 void MyImu::DBC_ACC_OKU()
 {
@@ -98,6 +101,7 @@ void MyImu::DBC_SICAKLIK_OKU()
 }
 void MyImu::DBC_GYRO_OKU()
 {
+
 	uint8_t gyroBuffer[6];
 
 	gyroBuffer[0] = 0x43;
@@ -112,12 +116,12 @@ void MyImu::DBC_ACI_BULMA()
 {
 	DBC_DATA_OKU();//0.0014 0.000001066
 	//Ham Veri Iyilestirmeleri
-	gyroPitchAci_f += gyroEksen[0] * 0.000207;
-	gyroRollAci_f += gyroEksen[1] * 0.000207;
-	gyroYawAci_f += gyroEksen[2] * 0.000207;
+	gyroPitchAci_f += gyroEksen[0] * 0.000238;
+	gyroRollAci_f += gyroEksen[1] * 0.000238;
+	gyroYawAci_f += gyroEksen[2] * 0.000238;
 
-	gyroPitchAci_f += gyroRollAci_f * sin(gyroEksen[2]* 0.000001066);
-	gyroRollAci_f -= gyroPitchAci_f * sin(gyroEksen[2]* 0.000001066);
+	//gyroPitchAci_f += gyroRollAci_f * sin(gyroEksen[2]* 0.000001066);
+	//gyroRollAci_f -= gyroPitchAci_f * sin(gyroEksen[2]* 0.000001066);
 
 	accToplamVektor_s16 = sqrt((accEksen[0]*accEksen[0])+(accEksen[1]*accEksen[1])+(accEksen[2]*accEksen[2]));
 
@@ -127,6 +131,8 @@ void MyImu::DBC_ACI_BULMA()
 
 	pitchAcisi_f = gyroPitchAci_f * 0.9 + accPitchAci_f * 0.1;
 	rollAci_f = gyroRollAci_f * 0.9 + accRollAci_f * 0.1;
+	kalman.guncelle(pitchAcisi_f);
+	kalman.guncelle(rollAci_f);
 }
 
 float* MyImu::PitchAl(){ return &pitchAcisi_f;}
