@@ -4,7 +4,7 @@
 ../Drivers/MyDrivers/Src/gorevyonetici.cpp:18:6:void Gorevyonetici::GorevBayrakKaldir()	32	static
 ../Drivers/MyDrivers/Src/gorevyonetici.cpp:35:6:void Gorevyonetici::GorevCalistir()	24	static
 ../Drivers/MyDrivers/Src/gorevyonetici.cpp:48:6:void Gorevyonetici::IRQHandler_()	16	static
-../Drivers/MyDrivers/Src/gorevyonetici.cpp:75:6:void Gorev::GorevGir(void (*)(), int16_t)	24	static
-../Drivers/MyDrivers/Src/gorevyonetici.cpp:81:6:void Gorev::Calistir()	16	static
-../Drivers/MyDrivers/Src/gorevyonetici.cpp:89:6:void Gorev::BayrakDuzenle(bool)	16	static
-../Drivers/MyDrivers/Src/gorevyonetici.cpp:91:9:int16_t Gorev::MsAl()	16	static
+../Drivers/MyDrivers/Src/gorevyonetici.cpp:76:6:void Gorev::GorevGir(void (*)(), int16_t)	24	static
+../Drivers/MyDrivers/Src/gorevyonetici.cpp:82:6:void Gorev::Calistir()	16	static
+../Drivers/MyDrivers/Src/gorevyonetici.cpp:90:6:void Gorev::BayrakDuzenle(bool)	16	static
+../Drivers/MyDrivers/Src/gorevyonetici.cpp:92:9:int16_t Gorev::MsAl()	16	static

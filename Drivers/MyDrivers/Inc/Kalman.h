@@ -11,9 +11,9 @@
 class KalmanFiltresi
 {
 public:
-    KalmanFiltresi(float islemGurultu, float olcumGurultu, float tahminHata);
+    KalmanFiltresi(float islemGurultu_f, float olcumGurultu_f, float tahminHata_f);
 
-    float guncelle(float olcum);
+    float veriGuncelle(float veri_f);
 
 private:
     float Q; // İşlem gürültüsü kovaryansı

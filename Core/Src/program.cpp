@@ -5,30 +5,26 @@
  *      Author: onurd
  */
 #include "program.h"
-
-#include "Paket.h"
-#include "mytimer.h"
-#include "gorevyonetici.h"
-#include "Gps.h"
-#include "Imu.h"
 #include "usart.h"
-#include "Mag.h"
 #include <cmath>
 #include "tim.h"
-#include "Motor.h"
-#include "Barometre.h"
+#include "i2c.h"
+
 #include "Nesneler.h"
+
 /************************Degiskenler************************/
-float Kp = 50;
+float Kp = 12;
+float Ki = 1;
 float hata = 0;
-float kontrolSinyali;
-float Ki = 0.1;
+float kontrolSinyali1_f;
+float kontrolSinyali2_f;
 float integral = 0;
-float prevHata = 0;
 float aci;
 int8_t tur;
-uint8_t GpsDataPacket[21]={0};
-uint8_t ImuDataPacket[21]={0};
+uint8_t GpsVeriPaket[21]={0};
+uint8_t ImuVeriPaket[21]={0};
+uint8_t VersiyonVeriPaket[8]={0};
+uint8_t YoklamaVeriPaket[8]={0};
 float pitch;
 float roll;
 float yaw;
@@ -38,30 +34,29 @@ float gidilecekMesafe_f=0;
 float donulecekAci_f =0;
 float baslangicHatasi=0;
 float baslangicHeading=0;
+float pwmOffset=450;
+bool yonelmeBayrak=false;
 bool hedefbayrak=true;
 bool solaDonbayrak=false;
 bool sagaDonbayrak=false;
 enum ArabaDurumlar
 {
-	MesafeBul,
-	YonelimBul,
-	Yonel,
-	Ilerle,
-	Var
+	Hazirlik,
+	Yonelim
 };
 /*****************Fonksiyon Bildirimleri********************/
-void GpsGorev();
-void ImuGorev();
+void GpsVeriGorev();
+void EksenGorev();
 void YonelmeGorev();
-void Gorevler4();
+void ImuVeriGorev();
 void ArayuzTask();
-
+void YonelmeBayrakGorev();
 void setup()
 {
 	//uart3.Yapilandir(115200, GPIOD, GPIO_PIN_8,GPIOB ,GPIO_PIN_11);
 	//uart3.receiveIT(RotaData, 8);
 
-	ArayuzPaket.PaketKesmeInit();
+	ArayuzPaket.PaketKesmeYapilandir();
 	motorSag.Yapilandir();
 	motorSol.Yapilandir();
 	gps.Yapilandir();
@@ -77,12 +72,14 @@ void setup()
 	GPIOD->ODR ^= GPIO_PIN_12;
 	HAL_Delay(2000);
 	imu.DBC_GYRO_OFSET();
-	gorev.GorevAl(ImuGorev,30);
+	gorev.GorevAl(EksenGorev,30);
+	gorev.GorevAl(YonelmeGorev,35);
 	gorev.GorevAl(ArayuzTask,100);
-	gorev.GorevAl(YonelmeGorev,500);
-	gorev.GorevAl(GpsGorev,1000);
-	motorSag.PWM(1000,TIM_CHANNEL_2);
-	motorSol.PWM(1000,TIM_CHANNEL_4);
+	gorev.GorevAl(ImuVeriGorev,760);
+	gorev.GorevAl(GpsVeriGorev,1000);
+	gorev.GorevAl(YonelmeBayrakGorev,5000);
+	motorSag.PWM(400,TIM_CHANNEL_2);
+	motorSol.PWM(400,TIM_CHANNEL_4);
 	araba.Dur();
 
 }
@@ -95,78 +92,61 @@ void loop()
 
 	gorev.GorevCalistir();
 
-	if(ArayuzPaket.GidilecekNoktaBayrak)
-	{
-		if(solaDonbayrak==true)
-		{
-			araba.solGit();
-			solaDonbayrak=false;
-		}
-		if(sagaDonbayrak==true)
-		{
-			araba.sagGit();
-			sagaDonbayrak=false;
-		}
-		if(heading >= donulecekAci_f - 4 && heading <= donulecekAci_f + 4)
-		{
-			araba.duzGit();
-		}
-	}
-
 }
 
-void GpsGorev()
+void GpsVeriGorev()
 {
 	GPIOD->ODR ^= GPIO_PIN_12;
-	GpsPaket.GpsPaketOlustur(*gps.LatitudeAl(),*gps.LongitudeAl(),*barometre.IrtifaOku(0),*barometre.SicaklikOku());
-	GpsPaket.gpsPaketCagir(GpsDataPacket);
+	GpsPaket.GpsPaketOlustur(41.2174316, 36.4566603,*barometre.IrtifaOku(0),*barometre.SicaklikOku());
+	GpsPaket.gpsPaketCagir(GpsVeriPaket);
 	ImuPaket.ImuPaketOlustur(*imu.PitchAl(), *imu.RollAl(), *mag.HeadingOlustur(pitch,roll), *imu.SicaklikAl());
-	ImuPaket.imuPaketCagir(ImuDataPacket);
+	ImuPaket.imuPaketCagir(ImuVeriPaket);
 	if(ArayuzPaket.YoklamaFlag)
 	{
-		HAL_UART_Transmit(&huart3, GpsDataPacket, sizeof(GpsDataPacket), 1000);
-		HAL_UART_Transmit(&huart3, ImuDataPacket, sizeof(ImuDataPacket), 1000);
+		HAL_UART_Transmit(&huart3, GpsVeriPaket, sizeof(GpsVeriPaket), 1000);
 	}
 }
-void ImuGorev()
+void EksenGorev()
 {
 	GPIOD->ODR ^= GPIO_PIN_13;
-	imu.DBC_ACI_BULMA();
+	imu.DBC_ACI_BULMA(); //imu pitch roll yaw al
 
 	pitch=*imu.PitchAl();
 	roll=*imu.RollAl();
 	yaw=*imu.YawAl();
-	heading =*mag.HeadingOlustur(pitch,roll);
-	irtifa=*barometre.IrtifaOku(0);
+	heading =*mag.HeadingOlustur(pitch,roll); // mag heading al
+	irtifa=*barometre.IrtifaOku(0); // baro irtifa al
 }
-
+void ImuVeriGorev()
+{
+	if(ArayuzPaket.YoklamaFlag)
+	{
+		HAL_UART_Transmit(&huart3, ImuVeriPaket, sizeof(ImuVeriPaket), 1000);
+	}
+}
 void YonelmeGorev()
 {
-    ArabaDurumlar Durum= MesafeBul;
-    if(ArayuzPaket.GidilecekNoktaBayrak)
+    ArabaDurumlar Durum= Hazirlik;
+    if(ArayuzPaket.GidilecekNoktaBayrak && yonelmeBayrak==true)
     {
         hedefbayrak = true;
         while(hedefbayrak)
         {
             switch(Durum)
             {
-                case MesafeBul:
-                    gidilecekMesafe_f = araba.mesafeBul(*gps.LatitudeAl(), *gps.LongitudeAl(), *ArayuzPaket.ArayuzLatAl(), *ArayuzPaket.ArayuzLonAl());
-                    Durum = YonelimBul;
+                case Hazirlik:
+                    gidilecekMesafe_f = araba.mesafeBul(41.2174316,36.4566603, *ArayuzPaket.ArayuzLatAl(), *ArayuzPaket.ArayuzLonAl());
+                    donulecekAci_f = araba.yonelimBul(41.2174316, 36.4566603, *ArayuzPaket.ArayuzLatAl(), *ArayuzPaket.ArayuzLonAl());
+                    Durum = Yonelim;
                     break;
 
-                case YonelimBul:
-                    donulecekAci_f = araba.yonelimBul(*gps.LatitudeAl(), *gps.LongitudeAl(), *ArayuzPaket.ArayuzLatAl(), *ArayuzPaket.ArayuzLonAl());
-                    Durum = Yonel;
-
-                    break;
-
-                case Yonel:
-                	if(gidilecekMesafe_f>=10)
+                case Yonelim:
+                	if(gidilecekMesafe_f>=7)
                 	{
-                		if(heading < donulecekAci_f - 4 || heading > donulecekAci_f + 4)
+                		if(heading < donulecekAci_f - 3 || heading > donulecekAci_f + 3)
                 		{
                 			hata = donulecekAci_f - heading;
+                			integral += abs(hata);
                 			if(hata > 180)
                 			{
                 				hata = hata - 360;
@@ -176,59 +156,74 @@ void YonelmeGorev()
                 				hata = 360 + hata;
                 			}
 
-                			if(abs(hata) < 10)
+                			integral=isaret.ustSinirla(integral,200);
+
+                			kontrolSinyali1_f = pwmOffset+Kp * abs(hata) + Ki * integral;
+                			kontrolSinyali1_f=isaret.ustSinirla(kontrolSinyali1_f, 1000);
+                			kontrolSinyali1_f=isaret.altSinirla(kontrolSinyali1_f, 450);
+                			kontrolSinyali2_f = 300 - ((kontrolSinyali1_f - 450) * (300 - 75)) / (1000 - 450);
+                			kontrolSinyali2_f=isaret.ustSinirla(kontrolSinyali2_f, 300);
+                			kontrolSinyali2_f=isaret.altSinirla(kontrolSinyali2_f, 75);
+                			if(hata < 0)
                 			{
-                				integral += hata;
+                				motorSag.PWM(kontrolSinyali1_f, TIM_CHANNEL_2);
+                				motorSol.PWM(kontrolSinyali2_f, TIM_CHANNEL_4);
+                				araba.solGit();
                 			}
                 			else
                 			{
-                				integral = 0;
-							}
-
-							kontrolSinyali = Kp * hata + Ki * integral;
-							if(kontrolSinyali > 1000 || kontrolSinyali < -1000)
-							{
-								kontrolSinyali = 1000;
-							}
-
-							if(hata < 0)
-							{
-								motorSol.PWM(abs(kontrolSinyali), TIM_CHANNEL_4);
-								solaDonbayrak=true;
-							}
-							else
-							{
-								motorSag.PWM(abs(kontrolSinyali), TIM_CHANNEL_2);
-								sagaDonbayrak=true;
-							}
-
-							heading = *mag.HeadingOlustur(pitch,roll);  // heading güncelleniyor
-						}
-						else
-						{
-							 motorSag.PWM(1000, TIM_CHANNEL_2);
-							 motorSol.PWM(1000, TIM_CHANNEL_4);
-							 araba.duzGit();
-						}
+                				motorSol.PWM(kontrolSinyali1_f, TIM_CHANNEL_4);
+                				motorSag.PWM(kontrolSinyali2_f, TIM_CHANNEL_2);
+                				araba.sagGit();
+                			}
+                			heading =*mag.HeadingOlustur(pitch,roll); // mag heading al
+                		}
+                		else
+                		{
+                			motorSag.PWM(1000, TIM_CHANNEL_2);
+                			motorSol.PWM(1000, TIM_CHANNEL_4);
+                			araba.Dur();
+                			integral=0;
+                			yonelmeBayrak=false;
+                		}
                 	}
                 	hedefbayrak = false;
+
                 	break;
             }
         }
 
-        if(gidilecekMesafe_f < 10)
+        if(gidilecekMesafe_f < 7)
         {
             ArayuzPaket.GidilecekNoktaBayrak = false;
             araba.Dur();
         }
     }
 }
+void YonelmeBayrakGorev()
+{
+	yonelmeBayrak=true;
+}
 void ArayuzTask()
 {
 	 if(ArayuzPaket.PaketCozBayrak)
 	 {
-		 ArayuzPaket.PaketCoz();
 		 ArayuzPaket.PaketCozBayrak = false;
+		 ArayuzPaket.PaketCoz();
+		 if(ArayuzPaket.VersiyonPaketBayrak==true)
+		 {
+			 VersiyonPaket.VersiyonPaketOlustur(0, 0, 9);
+			 VersiyonPaket.versiyonPaketCagir(VersiyonVeriPaket);
+			 HAL_UART_Transmit(&huart3, VersiyonVeriPaket, sizeof(VersiyonVeriPaket), 1000);
+			 ArayuzPaket.VersiyonPaketBayrak=false;
+		 }
+		 if(ArayuzPaket.YoklamaPaketFlag==true)
+		 {
+			 YoklamaPaket.YoklamaPaketOlustur();
+			 YoklamaPaket.yoklamaPaketCagir(YoklamaVeriPaket);
+			 HAL_UART_Transmit(&huart3, YoklamaVeriPaket, sizeof(YoklamaVeriPaket), 1000);
+			 ArayuzPaket.YoklamaPaketFlag=false;
+		 }
 	 }
 }
 
@@ -245,7 +240,7 @@ extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 	if (huart->Instance == USART3)
 	{
-		ArayuzPaket.BayrakKaldir();
+		ArayuzPaket.ArayuzDataAlveBayrakKaldir();
 	}
 }
 /*

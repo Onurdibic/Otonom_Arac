@@ -8,18 +8,18 @@
 
 #include "Kalman.h"
 
-KalmanFiltresi::KalmanFiltresi(float islemGurultu, float olcumGurultu, float tahminHata)
+KalmanFiltresi::KalmanFiltresi(float islemGurultu_f, float olcumGurultu_f, float tahminHata_f)
 {
-	Q=islemGurultu;
-	R=olcumGurultu;
-	P=tahminHata;
+	Q=islemGurultu_f;
+	R=olcumGurultu_f;
+	P=tahminHata_f;
 	K=0;
 	X=0;
 }
-float KalmanFiltresi::guncelle(float olcum)
+float KalmanFiltresi::veriGuncelle(float veri_f)
 {
     K = P / (P + R);
-    X = X + K * (olcum - X);
+    X = X + K * (veri_f - X);
     P = (1 - K) * P + Q;
 
     return X;

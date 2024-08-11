@@ -26,7 +26,7 @@ void Gorevyonetici::GorevBayrakKaldir()
 			gorevler[i].BayrakDuzenle(true);
 		}
      }
-    if (Counter_u16 % 2000 == 0)
+    if (Counter_u16 % 5000 == 0)
   	{
   	    Counter_u16=0;
   	}
@@ -72,6 +72,7 @@ void Gorevyonetici::IRQHandler_()
 	    }
 
 }
+
 void Gorev::GorevGir(void (*gorev)(), int16_t ms_s16)
 {
     this->gorev = gorev;

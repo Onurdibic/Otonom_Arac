@@ -90,23 +90,14 @@ void Araba::duzGit()
 void Araba::sagGit()
 {
 	lm.IleriGit();
-	rm.Dur();
+	rm.IleriGit();
 }
 void Araba::solGit()
 {
-    lm.Dur();
+    lm.IleriGit();
     rm.IleriGit();
 }
-void Araba::kendiSagaDon()
-{
-	rm.GeriGit();
-	lm.IleriGit();
-}
-void Araba::kendiSolaDon()
-{
-	rm.IleriGit();
-	lm.GeriGit();
-}
+
 
 float Araba::mesafeBul(float guncelLat_f, float guncelLon_f, float gidilecekLat_f, float gidilecekLon_f)
 {

@@ -30,86 +30,77 @@ Paket::Paket(uint8_t baslik1_u8, uint8_t baslik2_u8, uint8_t paketTipi_u8, uint8
 	this->paketTipi_u8=paketTipi_u8;
 	this->dataBoyutu_u8=dataBoyutu_u8;
 }
-void Paket::PaketKesmeInit()
+void Paket::PaketKesmeYapilandir()
 {
 	HAL_UART_Receive_IT(huart, &ArayuzData,1);
 }
 void Paket::GpsPaketOlustur(float latitude,float longitude,float altitude,float derece)
 {
 
-    gpspaket[0] = 0x12;
-    gpspaket[1] = 0x34;
-    gpspaket[2] = 0x01;
-    gpspaket[3] = 0x11;
-    this->latitude = latitude;
-    this->longitude = longitude;
-    this->altitude = altitude;
-    this->derece = derece;
+    gpspaket[0] = baslik1_u8;
+    gpspaket[1] = baslik2_u8;
+    gpspaket[2] = paketTipi_u8;
+    gpspaket[3] = dataBoyutu_u8;
+
     floatToBytes(&latitude, latBytes_u8);
     floatToBytes(&longitude, lonBytes_u8);
     floatToBytes(&altitude, altBytes_u8);
     floatToBytes(&derece, dereceBytes_u8);
+
     memcpy(gpspaket + 4, latBytes_u8, 4);
     memcpy(gpspaket + 8, lonBytes_u8, 4);
     memcpy(gpspaket + 12, altBytes_u8, 4);
     memcpy(gpspaket + 16, dereceBytes_u8, 4);
+
     gpspaket[20]=CRC8Hesaplama(gpspaket,4, 20);
 }
 void Paket::ImuPaketOlustur(float pitch,float roll,float heading,float sicaklik)
 {
-    imupaket[0] = 0x12;
-    imupaket[1] = 0x34;
-    imupaket[2] = 0x02;
-    imupaket[3] = 0x11;
-    this->pitch = pitch;
-    this->roll = roll;
-    this->heading = heading;
-    this-> sicaklik = sicaklik;
+    imupaket[0] = baslik1_u8;
+    imupaket[1] = baslik2_u8;
+    imupaket[2] = paketTipi_u8;
+    imupaket[3] = dataBoyutu_u8;
+
     floatToBytes(&pitch, pitchBytes_u8);
     floatToBytes(&roll, rollBytes_u8);
     floatToBytes(&heading, headingBytes_u8);
     floatToBytes(&sicaklik, sicaklikBytes_u8);
+
     memcpy(imupaket + 4, pitchBytes_u8, 4);
     memcpy(imupaket + 8, rollBytes_u8, 4);
     memcpy(imupaket + 12, headingBytes_u8, 4);
     memcpy(imupaket + 16, sicaklikBytes_u8, 4);
+
     imupaket[20] = CRC8Hesaplama(imupaket, 4,20);
 }
-void Paket::VersiyonPaketGonder(uint8_t b,uint8_t o,uint8_t s)
+void Paket::VersiyonPaketOlustur(uint8_t b,uint8_t o,uint8_t s)
 {
-	versiyonpaket[0] = 0x12;
-	versiyonpaket[1] = 0x34;
-	versiyonpaket[2] = 0x03;
-	versiyonpaket[3] = 0x04;
+	versiyonpaket[0] = baslik1_u8;
+	versiyonpaket[1] = baslik2_u8;
+	versiyonpaket[2] = paketTipi_u8;
+	versiyonpaket[3] = dataBoyutu_u8;
 	versiyonpaket[4] = b;
 	versiyonpaket[5] = o;
 	versiyonpaket[6] = s;
 	versiyonpaket[7] = CRC8Hesaplama(versiyonpaket, 4,7);
-	HAL_UART_Transmit(huart, versiyonpaket, sizeof(versiyonpaket), 1000);
 }
-void Paket::YoklamaPaketGonder()
+void Paket::YoklamaPaketOlustur()
 {
-	YoklamaFlag=true;
-	yoklamapaket[0] = 0x12;
-	yoklamapaket[1] = 0x34;
-	yoklamapaket[2] = 0x04;
-	yoklamapaket[3] = 0x04;
+	yoklamapaket[0] = baslik1_u8;
+	yoklamapaket[1] = baslik2_u8;
+	yoklamapaket[2] = paketTipi_u8;
+	yoklamapaket[3] = dataBoyutu_u8;
 	yoklamapaket[4] = 0x01;
 	yoklamapaket[5] = 0x02;
 	yoklamapaket[6] = 0x03;
 	yoklamapaket[7] = CRC8Hesaplama(yoklamapaket, 4,7);
-	HAL_UART_Transmit(huart, yoklamapaket, sizeof(yoklamapaket), 1000);
 }
-void Paket::gpsPaketCagir(uint8_t *kopyaDizi)
-{
-	memcpy(kopyaDizi, gpspaket, sizeof(gpspaket));
-}
-void Paket::imuPaketCagir(uint8_t *kopyaDizi)
-{
-	memcpy(kopyaDizi, imupaket, sizeof(imupaket));
-}
+void Paket::gpsPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, gpspaket, sizeof(gpspaket));}
+void Paket::imuPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, imupaket, sizeof(imupaket));}
+void Paket::versiyonPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, versiyonpaket, sizeof(versiyonpaket));}
+void Paket::yoklamaPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, yoklamapaket, sizeof(yoklamapaket));}
 
-void Paket::BayrakKaldir()
+void Paket::ArayuzDataAlveBayrakKaldir()
 {
 	if (ArayuzData!=0xFF)
 	{
@@ -184,9 +175,9 @@ void Paket::PaketCoz()
             case DataOku:
                 if (Paket == GPS && dataLength_s16 == 8)
                 {
+                	GidilecekNoktaBayrak = true;
                     ArayuzEnlem_f = bytesToFloat(ArayuzBuffer_u8, startIndex_u32);
                     ArayuzBoylam_f = bytesToFloat(ArayuzBuffer_u8, (startIndex_u32 + 4) % sizeof(ArayuzBuffer_u8));
-                    GidilecekNoktaBayrak = true;
 
                     startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8);
                     Durum = Baslik1Coz;
@@ -194,7 +185,7 @@ void Paket::PaketCoz()
                 }
                 else if (Paket == VERSIYON && dataLength_s16 == 8)
                 {
-                    VersiyonPaketGonder(0, 0, 8);
+                	VersiyonPaketBayrak=true;
 
                     startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8);
                     Durum = Baslik1Coz;
@@ -202,7 +193,9 @@ void Paket::PaketCoz()
                 }
                 else if (Paket == YOKLAMA && dataLength_s16 == 8)
                 {
-                    YoklamaPaketGonder();
+                	YoklamaFlag=true;
+                	YoklamaPaketFlag=true;
+
                     startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8);
                     Durum = Baslik1Coz;
                     islem = false;
@@ -220,11 +213,11 @@ void Paket::PaketCoz()
 float *Paket::ArayuzLatAl(){return &ArayuzEnlem_f;}
 float *Paket::ArayuzLonAl(){return &ArayuzBoylam_f;}
 
-uint8_t Paket::CRC8Hesaplama(uint8_t *data, uint8_t start ,uint8_t end)
+uint8_t Paket::CRC8Hesaplama(uint8_t *data, uint8_t baslangic ,uint8_t bitis)
 {
     uint8_t crc = 0x00;
 
-    for (uint8_t i = start; i < end; i++)
+    for (uint8_t i = baslangic; i < bitis; i++)
     {
         crc ^= data[i]; // CRC değerini, dizinin bir sonraki byte ile XOR
         for (uint8_t j = 0; j < 8; j++) //Her bir byte için döngü

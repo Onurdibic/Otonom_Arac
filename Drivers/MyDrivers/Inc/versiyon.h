@@ -1,27 +1,25 @@
 #ifndef VERSIYON_H_
 #define VERSIYON_H_
 
-#define VERSIYON "0.0.8"
+#define VERSIYON "0.0.9"
 
 
 #define MAJOR 0
 #define MINOR 0
-#define BUILD 8
+#define BUILD 9
 
 /******************************************************
 *
-* Versiyon    : 0.0.8
-* Tarih       : 09.08.2024
+* Versiyon    : 0.0.9
+* Tarih       : 12.08.2024
 * Yazanlar    : Onur Dibic
 *
 * STM32CubeIDE : 1.14.0
 *
 * Aciklamalar :
-* - Pitch ve roll değerleri yaw açısında değişim olurken kaymaya olanaklı olduğu belirlenmiştir.
-* - Bu sorunu düzeltmek için Kalman.h kütüphanesindeki Tek Boyutlu Kalman Filtresi sayesinde
-* hem ham veriye hem de çıktıya kalman filtresi uygulanmıştır.
-* - Imu Verilerindeki gürültü engellenmiştir.
-* - Nesneler.h dosyasının içerisine oluşturulan nesneler aktarılmiştir.
+* - Yönelme sırasındaki , kodda takılma sorunu görev yöneticisi kullanılarak çözülmüştür.
+* - PI kontrol için yeni algoritma yazılmıştır. Amaçlanan şey araç durmadan yönelmesidir.
+* - Isaret Isleme kütüphanesi eklenmiştir.
 ******************************************************/
 
 #endif  VERSIYON_H_

@@ -1,2 +1,2 @@
 ../Drivers/MyDrivers/Src/Kalman.cpp:11:1:KalmanFiltresi::KalmanFiltresi(float, float, float)	1
-../Drivers/MyDrivers/Src/Kalman.cpp:19:7:float KalmanFiltresi::guncelle(float)	1
+../Drivers/MyDrivers/Src/Kalman.cpp:19:7:float KalmanFiltresi::veriGuncelle(float)	1

@@ -73,8 +73,8 @@ void MyImu::DBC_DATA_OKU()
     gyroEksen[2] -= gyroHesap[2];
     for(int i=0;i<3;i++)
     {
-    	kalman.guncelle(accEksen[i]);
-    	kalman.guncelle(gyroEksen[i]);
+    	kalman.veriGuncelle(accEksen[i]);
+    	kalman.veriGuncelle(gyroEksen[i]);
     }
 
 }
@@ -116,12 +116,9 @@ void MyImu::DBC_ACI_BULMA()
 {
 	DBC_DATA_OKU();//0.0014 0.000001066
 	//Ham Veri Iyilestirmeleri
-	gyroPitchAci_f += gyroEksen[0] * 0.000238;
-	gyroRollAci_f += gyroEksen[1] * 0.000238;
-	gyroYawAci_f += gyroEksen[2] * 0.000238;
-
-	//gyroPitchAci_f += gyroRollAci_f * sin(gyroEksen[2]* 0.000001066);
-	//gyroRollAci_f -= gyroPitchAci_f * sin(gyroEksen[2]* 0.000001066);
+	gyroPitchAci_f += gyroEksen[0] * 0.00024;
+	gyroRollAci_f += gyroEksen[1] * 0.00024;
+	gyroYawAci_f += gyroEksen[2] * 0.00024;
 
 	accToplamVektor_s16 = sqrt((accEksen[0]*accEksen[0])+(accEksen[1]*accEksen[1])+(accEksen[2]*accEksen[2]));
 
@@ -131,8 +128,8 @@ void MyImu::DBC_ACI_BULMA()
 
 	pitchAcisi_f = gyroPitchAci_f * 0.9 + accPitchAci_f * 0.1;
 	rollAci_f = gyroRollAci_f * 0.9 + accRollAci_f * 0.1;
-	kalman.guncelle(pitchAcisi_f);
-	kalman.guncelle(rollAci_f);
+	kalman.veriGuncelle(pitchAcisi_f);
+	kalman.veriGuncelle(rollAci_f);
 }
 
 float* MyImu::PitchAl(){ return &pitchAcisi_f;}
