@@ -75,7 +75,7 @@ float* MyMag::HeadingOlustur(float pitch, float roll)
 	//TiltliX_f = kalibreliX_f * cos(pitchRad) + kalibreliZ_f * sin(pitchRad);
 	//TiltliY_f = kalibreliY_f * cos(rollRad) - kalibreliZ_f * sin(rollRad);
 
-	heading_f = atan2(kalibreliY_f, kalibreliX_f);
+	heading_f = atan2(kalibreliY_f, kalibreliX_f); //- pi ve pi arasında değer verir
 
 	if(heading_f < 0)
 		heading_f += 2*M_PI;
@@ -84,7 +84,7 @@ float* MyMag::HeadingOlustur(float pitch, float roll)
 		heading_f -= 2*M_PI;
 
 
-	headingAcisi_f = heading_f * (180/M_PI);
+	headingAcisi_f = heading_f * (180/M_PI); // dereceye çevrilir
 
 	return &headingAcisi_f;
 

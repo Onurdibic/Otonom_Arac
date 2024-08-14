@@ -14,7 +14,7 @@
 
 class Barometre {
 public:
-    Barometre(I2C_HandleTypeDef* i2c_handle, uint8_t baroAdres);
+    Barometre(I2C_HandleTypeDef* i2c_handle, uint8_t adres);
     void Yapilandir();
     float *SicaklikOku();
     float BasincOku(uint8_t oss);
@@ -25,9 +25,9 @@ private:
     void KalibrasyonDatalariOku();
     uint16_t regSicaklikOku();
     uint16_t regBasincOku(uint8_t oss);
-    void writeAndRead(uint8_t* raw, uint8_t data, char sens, uint8_t oss);
+    void writeAndRead(uint8_t* hamData_u8, uint8_t data, char secim, uint8_t oss);
 
-    uint8_t baroAdres;
+    uint8_t adres;
     uint8_t data;
     uint8_t hamDatalar[22]={0};
     float Po = 101325;
@@ -41,7 +41,7 @@ private:
     int32_t UT, UP, X1, X2, X3, B3, B5, B6;
 
     unsigned long B4, B7;
-    float T, P;
+    float sicaklik_f, basinc_f;
 };
 
 #endif /* MYDRIVERS_INC_BAROMETRE_H_ */

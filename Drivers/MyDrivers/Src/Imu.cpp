@@ -15,7 +15,7 @@
 #define RESET_BIT 0x80
 
 MyImu::MyImu(I2C_HandleTypeDef *hi2c)
-    : hi2c(hi2c), kalman(0.1, 0.2, 10){}
+    : hi2c(hi2c), kalman(0.05, 0.2, 10){}
 
 void MyImu::DBC_MPU6500_Reset()
 {

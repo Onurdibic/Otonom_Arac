@@ -25,11 +25,14 @@ uint8_t GpsVeriPaket[21]={0};
 uint8_t ImuVeriPaket[21]={0};
 uint8_t VersiyonVeriPaket[8]={0};
 uint8_t YoklamaVeriPaket[8]={0};
+uint8_t RotaVeriPaket[8]={0};
 float pitch;
 float roll;
 float yaw;
 float heading;
 float irtifa;
+float imusicaklik;
+float barosicaklik;
 float gidilecekMesafe_f=0;
 float donulecekAci_f =0;
 float baslangicHatasi=0;
@@ -75,7 +78,7 @@ void setup()
 	gorev.GorevAl(EksenGorev,30);
 	gorev.GorevAl(YonelmeGorev,35);
 	gorev.GorevAl(ArayuzTask,100);
-	gorev.GorevAl(ImuVeriGorev,760);
+	gorev.GorevAl(ImuVeriGorev,700);
 	gorev.GorevAl(GpsVeriGorev,1000);
 	gorev.GorevAl(YonelmeBayrakGorev,5000);
 	motorSag.PWM(400,TIM_CHANNEL_2);
@@ -97,9 +100,10 @@ void loop()
 void GpsVeriGorev()
 {
 	GPIOD->ODR ^= GPIO_PIN_12;
-	GpsPaket.GpsPaketOlustur(41.2174316, 36.4566603,*barometre.IrtifaOku(0),*barometre.SicaklikOku());
+	irtifa=*barometre.IrtifaOku(0); // baro irtifa al
+	GpsPaket.GpsPaketOlustur(41.2174316, 36.4566603,irtifa,barosicaklik);
 	GpsPaket.gpsPaketCagir(GpsVeriPaket);
-	ImuPaket.ImuPaketOlustur(*imu.PitchAl(), *imu.RollAl(), *mag.HeadingOlustur(pitch,roll), *imu.SicaklikAl());
+	ImuPaket.ImuPaketOlustur(pitch, roll,heading, imusicaklik);
 	ImuPaket.imuPaketCagir(ImuVeriPaket);
 	if(ArayuzPaket.YoklamaFlag)
 	{
@@ -115,7 +119,8 @@ void EksenGorev()
 	roll=*imu.RollAl();
 	yaw=*imu.YawAl();
 	heading =*mag.HeadingOlustur(pitch,roll); // mag heading al
-	irtifa=*barometre.IrtifaOku(0); // baro irtifa al
+	imusicaklik=*imu.SicaklikAl();
+	barosicaklik=*barometre.SicaklikOku();
 }
 void ImuVeriGorev()
 {
@@ -127,7 +132,7 @@ void ImuVeriGorev()
 void YonelmeGorev()
 {
     ArabaDurumlar Durum= Hazirlik;
-    if(ArayuzPaket.GidilecekNoktaBayrak && yonelmeBayrak==true)
+    if(ArayuzPaket.GidilecekNoktaBayrak==true && yonelmeBayrak==true && ArayuzPaket.arabaDurBayrak==false)
     {
         hedefbayrak = true;
         while(hedefbayrak)
@@ -192,14 +197,21 @@ void YonelmeGorev()
                 	break;
             }
         }
-
         if(gidilecekMesafe_f < 7)
         {
             ArayuzPaket.GidilecekNoktaBayrak = false;
+
             araba.Dur();
         }
     }
+    if(ArayuzPaket.arabaDurBayrak==true)
+    {
+    	araba.Dur();
+    	ArayuzPaket.GidilecekNoktaBayrak=false;
+    	ArayuzPaket.arabaDurBayrak=false;
+    }
 }
+
 void YonelmeBayrakGorev()
 {
 	yonelmeBayrak=true;
@@ -224,6 +236,13 @@ void ArayuzTask()
 			 HAL_UART_Transmit(&huart3, YoklamaVeriPaket, sizeof(YoklamaVeriPaket), 1000);
 			 ArayuzPaket.YoklamaPaketFlag=false;
 		 }
+	 }
+	 if(ArayuzPaket.GidilecekNoktaBayrak==false && ArayuzPaket.RotaGeldiBayrak==true)
+	 {
+		 RotaPaket.RotaPaketOlustur();
+		 RotaPaket.rotaPaketCagir(RotaVeriPaket);
+		 HAL_UART_Transmit(&huart3, RotaVeriPaket, sizeof(RotaVeriPaket), 1000);
+		 ArayuzPaket.RotaGeldiBayrak=false;
 	 }
 }
 

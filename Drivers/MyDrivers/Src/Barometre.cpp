@@ -7,17 +7,17 @@
 #include "Barometre.h"
 #include <math.h>
 
-Barometre::Barometre(I2C_HandleTypeDef* hi2c, uint8_t baroAdres)
+Barometre::Barometre(I2C_HandleTypeDef* hi2c, uint8_t adres)
 {
     this->hi2c=hi2c;
-	this->baroAdres=baroAdres;
-	T=0;
-	P=0;
+	this->adres=adres;
+	sicaklik_f=0;
+	basinc_f=0;
 }
 
 void Barometre::Yapilandir()
 {
-	HAL_I2C_Mem_Read(hi2c, baroAdres, 0xAA, 1, hamDatalar, 22, 100);
+	HAL_I2C_Mem_Read(hi2c, adres, 0xAA, 1, hamDatalar, 22, 100);
 	AC1 = (hamDatalar[0] << 8) | hamDatalar[1];
 	AC2 = (hamDatalar[2] << 8) | hamDatalar[3];
 	AC3 = (hamDatalar[4] << 8) | hamDatalar[5];
@@ -37,9 +37,9 @@ float *Barometre::SicaklikOku()
 	 X1 = (UT - AC6) * AC5 >> 15;
 	 X2 = (MC << 11) / (X1 + MD);
 	 B5 = X1 + X2;
-	 T = ((B5 + 8) >> 4) / 10.0;
+	 sicaklik_f = ((B5 + 8) >> 4) / 10.0;
 
-    return &T ;
+    return &sicaklik_f ;
 }
 
 float Barometre::BasincOku(uint8_t oss)
@@ -55,18 +55,18 @@ float Barometre::BasincOku(uint8_t oss)
 	 X3 = ((X1 + X2) + 2) >> 2;
 	 B4 = (AC4 * (uint32_t)(X3 + 32768)) >> 15;
 	 B7 = ((uint32_t)UP - B3) * (50000 >> oss);
-	 P = (B7 < 0x80000000) ? (B7 * 2) / B4 : (B7 / B4) * 2;
-	 X1 = (P / 256.0) * (P / 256.0);
+	 basinc_f = (B7 < 0x80000000) ? (B7 * 2) / B4 : (B7 / B4) * 2;
+	 X1 = (basinc_f / 256.0) * (basinc_f / 256.0);
 	 X1 = (X1 * 3038) >> 16;
-	 X2 = (-7357 * P)  / 65536.0;
-	 P += (X1 + X2 + 3791) >> 4;
-	 return P;
+	 X2 = (-7357 *basinc_f)  / 65536.0;
+	 basinc_f += (X1 + X2 + 3791) >> 4;
+	 return basinc_f;
 }
 
 float *Barometre::IrtifaOku(uint8_t oss)
 {
     BasincOku(oss);
-    irtifa_f = (44330.0 * (1.0 - pow((P / 101325.0), 0.1903)));
+    irtifa_f = (44330.0 * (1.0 - pow((basinc_f / 101325.0), 0.1903)));
     return &irtifa_f;
 }
 
@@ -75,7 +75,7 @@ uint16_t Barometre::regSicaklikOku()
     data = 0x2E;
     uint8_t hamSicaklik[2] = {0};
 
-    writeAndRead(hamSicaklik, data, 'T', 4);
+    writeAndRead(hamSicaklik, data, 'S', 4);
     return ((hamSicaklik[0] << 8) | hamSicaklik[1]);
 }
 
@@ -84,18 +84,18 @@ uint16_t Barometre::regBasincOku(uint8_t oss)
     data = 0x34 + (oss << 6);
     uint8_t hamBasinc[3] = {0};
 
-    writeAndRead(hamBasinc, data, 'P', oss);
+    writeAndRead(hamBasinc, data, 'B', oss);
     return (((hamBasinc[0] << 16) + (hamBasinc[1] << 8) + hamBasinc[2]) >> (8 - oss));
 }
 
-void Barometre::writeAndRead(uint8_t* raw, uint8_t data, char sens, uint8_t oss)
+void Barometre::writeAndRead(uint8_t* hamData_u8, uint8_t data, char secim, uint8_t oss)
 {
-    uint8_t size;
-    HAL_I2C_Mem_Write(hi2c, baroAdres, 0xF4, 1, &data, 1, 100);
+    uint8_t boyut;
+    HAL_I2C_Mem_Write(hi2c, adres, 0xF4, 1, &data, 1, 100);
 
-    if (sens == 'P')
+    if (secim == 'B')
     {
-        size = 3;
+    	boyut = 3;
         if (oss == 0) HAL_Delay(5);
         else if (oss == 1) HAL_Delay(8);
         else if (oss == 2) HAL_Delay(14);
@@ -103,9 +103,9 @@ void Barometre::writeAndRead(uint8_t* raw, uint8_t data, char sens, uint8_t oss)
     }
     else
     {
-        size = 2;
+    	boyut = 2;
         HAL_Delay(5);
     }
 
-    HAL_I2C_Mem_Read(hi2c, baroAdres, 0xF6, 1, raw, size, 100);
+    HAL_I2C_Mem_Read(hi2c, adres, 0xF6, 1, hamData_u8, boyut, 100);
 }

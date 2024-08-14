@@ -22,11 +22,12 @@ public:
     void ImuPaketOlustur(float pitch,float roll,float yaw,float sicaklik);
     void VersiyonPaketOlustur(uint8_t b,uint8_t o,uint8_t s);
     void YoklamaPaketOlustur();
+    void RotaPaketOlustur();
     void gpsPaketCagir(uint8_t *kopyaDizi);
     void imuPaketCagir(uint8_t *kopyaDizi);
     void versiyonPaketCagir(uint8_t *kopyaDizi);
     void yoklamaPaketCagir(uint8_t *kopyaDizi);
-
+    void rotaPaketCagir(uint8_t *kopyaDizi);
     void PaketKesmeYapilandir();
     void ArayuzDataAlveBayrakKaldir();
     void PaketCoz();
@@ -39,17 +40,20 @@ public:
     bool YoklamaFlag=false;
     bool GidilecekNoktaBayrak=false;
     bool YoklamaPaketFlag=false;
+    bool RotaGeldiBayrak=false;
+    bool arabaDurBayrak=false;
 
 private:
     UART_HandleTypeDef* huart;
 
     uint8_t CRC8Hesaplama(uint8_t *data, uint8_t baslangic, uint8_t bitis);
-    uint32_t floatToBytes(float *koordinatDeger_f, uint8_t* bytes_u8);
-    float bytesToFloat(const uint8_t* buffer_u8, int32_t startIndex_s32);
+    void floatToBytes(float *Deger_f, uint8_t* bytes);
+    float bytesToFloat(uint8_t* buffer_u8, int32_t startIndex_s32);
     uint8_t gpspaket[21];
     uint8_t imupaket[21];
     uint8_t versiyonpaket[8];
     uint8_t yoklamapaket[8];
+    uint8_t rotapaket[8];
 
     uint8_t ArayuzData;
     uint8_t ArayuzBuffer_u8[120];

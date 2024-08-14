@@ -18,6 +18,7 @@ void Motor::Yapilandir()
 {
     HAL_TIM_PWM_Start(htim_pwm_, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(htim_pwm_, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(htim_pwm_, TIM_CHANNEL_3);
     HAL_TIM_PWM_Start(htim_pwm_, TIM_CHANNEL_4);
     HAL_TIM_Encoder_Start(htim_enc_, TIM_CHANNEL_ALL);
     __HAL_TIM_SET_COUNTER(htim_enc_, 0);

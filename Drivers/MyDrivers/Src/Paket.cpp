@@ -12,9 +12,10 @@ enum Durumlar
 };
 enum Paketler
 {
-	GPS=0x01 ,
+	ROTA=0x01 ,
 	VERSIYON=0x02,
-	YOKLAMA=0x03
+	YOKLAMA=0x03,
+	DUR=0x04
 
 };
 
@@ -95,10 +96,22 @@ void Paket::YoklamaPaketOlustur()
 	yoklamapaket[6] = 0x03;
 	yoklamapaket[7] = CRC8Hesaplama(yoklamapaket, 4,7);
 }
+void Paket::RotaPaketOlustur()
+{
+	rotapaket[0] = baslik1_u8;
+	rotapaket[1] = baslik2_u8;
+	rotapaket[2] = paketTipi_u8;
+	rotapaket[3] = dataBoyutu_u8;
+	rotapaket[4] = 0x11;
+	rotapaket[5] = 0x22;
+	rotapaket[6] = 0x33;
+	rotapaket[7] = CRC8Hesaplama(rotapaket, 4,7);
+}
 void Paket::gpsPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, gpspaket, sizeof(gpspaket));}
 void Paket::imuPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, imupaket, sizeof(imupaket));}
 void Paket::versiyonPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, versiyonpaket, sizeof(versiyonpaket));}
 void Paket::yoklamaPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, yoklamapaket, sizeof(yoklamapaket));}
+void Paket::rotaPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, rotapaket, sizeof(rotapaket));}
 
 void Paket::ArayuzDataAlveBayrakKaldir()
 {
@@ -173,32 +186,57 @@ void Paket::PaketCoz()
                 break;
 
             case DataOku:
-                if (Paket == GPS && dataLength_s16 == 8)
+                if (Paket == ROTA && dataLength_s16 == 8)
                 {
-                	GidilecekNoktaBayrak = true;
-                    ArayuzEnlem_f = bytesToFloat(ArayuzBuffer_u8, startIndex_u32);
-                    ArayuzBoylam_f = bytesToFloat(ArayuzBuffer_u8, (startIndex_u32 + 4) % sizeof(ArayuzBuffer_u8));
+                	if (ArayuzBuffer_u8[(startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + dataLength_s16))
+                	{
+                		if(GidilecekNoktaBayrak==false)
+                		{
+                			ArayuzEnlem_f = bytesToFloat(ArayuzBuffer_u8, startIndex_u32);
+                			ArayuzBoylam_f = bytesToFloat(ArayuzBuffer_u8, (startIndex_u32 + 4) % sizeof(ArayuzBuffer_u8));
+                		}
+                		GidilecekNoktaBayrak = true;
+                		RotaGeldiBayrak=true;
+                	}
 
                     startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8);
                     Durum = Baslik1Coz;
                     islem = false;
                 }
-                else if (Paket == VERSIYON && dataLength_s16 == 8)
+                else if (Paket == VERSIYON && dataLength_s16 == 4)
                 {
-                	VersiyonPaketBayrak=true;
+                	if (ArayuzBuffer_u8[(startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + dataLength_s16))
+                	{
+                		VersiyonPaketBayrak=true;
+                	}
 
                     startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8);
                     Durum = Baslik1Coz;
                     islem = false;
                 }
-                else if (Paket == YOKLAMA && dataLength_s16 == 8)
+                else if (Paket == YOKLAMA && dataLength_s16 == 4)
                 {
-                	YoklamaFlag=true;
-                	YoklamaPaketFlag=true;
+                	if (ArayuzBuffer_u8[(startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + dataLength_s16))
+                	{
+                		YoklamaFlag=true;
+                		YoklamaPaketFlag=true;
+                	}
+
 
                     startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8);
                     Durum = Baslik1Coz;
                     islem = false;
+                }
+                else if(Paket == DUR && dataLength_s16==4)
+                {
+                	if (ArayuzBuffer_u8[(startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + dataLength_s16))
+                	{
+                		arabaDurBayrak=true;
+                	}
+
+                	startIndex_u32 = (startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8);
+                	Durum = Baslik1Coz;
+                	islem = false;
                 }
                 else
                 {
@@ -236,7 +274,7 @@ uint8_t Paket::CRC8Hesaplama(uint8_t *data, uint8_t baslangic ,uint8_t bitis)
     return crc;
 }
 
-float Paket::bytesToFloat(const uint8_t* buffer_u8, int32_t startIndex_s32)
+float Paket::bytesToFloat(uint8_t* buffer_u8, int32_t startIndex_s32)
 {
 	uint32_t intBits_u32 =(buffer_u8[(startIndex_s32 + 3) % 120] << 24) |
     					(buffer_u8[(startIndex_s32 + 2) % 120] << 16) |
@@ -247,12 +285,11 @@ float Paket::bytesToFloat(const uint8_t* buffer_u8, int32_t startIndex_s32)
     return floatsonuc_f;
 }
 
-uint32_t Paket::floatToBytes(float *Deger_f, uint8_t* bytes)
+void Paket::floatToBytes(float *Deger_f, uint8_t* bytes)
 {
     uint8_t* p = (uint8_t*)Deger_f;
     for (int i = 0; i < 4; i++)
     {
         bytes[i] = p[i];
     }
-    return (bytes[3] << 24) | (bytes[2] << 16) | (bytes[1] << 8) | (bytes[0] & 0xFF);
 }
