@@ -1,4 +1,4 @@
-../Drivers/MyDrivers/Src/Barometre.cpp:10:1:Barometre::Barometre(I2C_HandleTypeDef*, uint8_t)	1
+../Drivers/MyDrivers/Src/Barometre.cpp:10:1:Barometre::Barometre(I2C_HandleTypeDef*)	1
 ../Drivers/MyDrivers/Src/Barometre.cpp:18:6:void Barometre::Yapilandir()	1
 ../Drivers/MyDrivers/Src/Barometre.cpp:34:8:float* Barometre::SicaklikOku()	1
 ../Drivers/MyDrivers/Src/Barometre.cpp:45:7:float Barometre::BasincOku(uint8_t)	2

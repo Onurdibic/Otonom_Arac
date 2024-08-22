@@ -2,19 +2,21 @@
 ../Drivers/MyDrivers/Src/Paket.cpp:27:1:Paket::Paket(uint8_t, uint8_t, uint8_t, uint8_t)	16	static
 ../Drivers/MyDrivers/Src/Paket.cpp:34:6:void Paket::PaketKesmeYapilandir()	16	static
 ../Drivers/MyDrivers/Src/Paket.cpp:38:6:void Paket::GpsPaketOlustur(float, float, float, float)	32	static
-../Drivers/MyDrivers/Src/Paket.cpp:58:6:void Paket::ImuPaketOlustur(float, float, float, float)	32	static
-../Drivers/MyDrivers/Src/Paket.cpp:77:6:void Paket::VersiyonPaketOlustur(uint8_t, uint8_t, uint8_t)	16	static
-../Drivers/MyDrivers/Src/Paket.cpp:88:6:void Paket::YoklamaPaketOlustur()	16	static
-../Drivers/MyDrivers/Src/Paket.cpp:99:6:void Paket::RotaPaketOlustur()	16	static
-../Drivers/MyDrivers/Src/Paket.cpp:110:6:void Paket::gpsPaketCagir(uint8_t*)	16	static
-../Drivers/MyDrivers/Src/Paket.cpp:111:6:void Paket::imuPaketCagir(uint8_t*)	16	static
-../Drivers/MyDrivers/Src/Paket.cpp:112:6:void Paket::versiyonPaketCagir(uint8_t*)	16	static
-../Drivers/MyDrivers/Src/Paket.cpp:113:6:void Paket::yoklamaPaketCagir(uint8_t*)	16	static
-../Drivers/MyDrivers/Src/Paket.cpp:114:6:void Paket::rotaPaketCagir(uint8_t*)	16	static
-../Drivers/MyDrivers/Src/Paket.cpp:116:6:void Paket::ArayuzDataAlveBayrakKaldir()	16	static
-../Drivers/MyDrivers/Src/Paket.cpp:129:6:void Paket::PaketCoz()	32	static
-../Drivers/MyDrivers/Src/Paket.cpp:251:8:float* Paket::ArayuzLatAl()	16	static
-../Drivers/MyDrivers/Src/Paket.cpp:252:8:float* Paket::ArayuzLonAl()	16	static
-../Drivers/MyDrivers/Src/Paket.cpp:254:9:uint8_t Paket::CRC8Hesaplama(uint8_t*, uint8_t, uint8_t)	32	static
-../Drivers/MyDrivers/Src/Paket.cpp:277:7:float Paket::bytesToFloat(uint8_t*, int32_t)	32	static
-../Drivers/MyDrivers/Src/Paket.cpp:288:6:void Paket::floatToBytes(float*, uint8_t*)	32	static
+../Drivers/MyDrivers/Src/Paket.cpp:57:6:void Paket::ImuPaketOlustur(float, float, float, float)	32	static
+../Drivers/MyDrivers/Src/Paket.cpp:76:6:void Paket::SistemPaketOlustur(float, float)	24	static
+../Drivers/MyDrivers/Src/Paket.cpp:89:6:void Paket::VersiyonPaketOlustur(uint8_t, uint8_t, uint8_t)	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:100:6:void Paket::YoklamaPaketOlustur()	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:111:6:void Paket::RotaPaketOlustur()	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:122:6:void Paket::gpsPaketCagir(uint8_t*)	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:123:6:void Paket::imuPaketCagir(uint8_t*)	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:124:6:void Paket::sistemPaketCagir(uint8_t*)	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:125:6:void Paket::versiyonPaketCagir(uint8_t*)	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:126:6:void Paket::yoklamaPaketCagir(uint8_t*)	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:127:6:void Paket::rotaPaketCagir(uint8_t*)	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:129:6:void Paket::ArayuzDataAlveBayrakKaldir()	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:142:6:void Paket::PaketCoz()	32	static
+../Drivers/MyDrivers/Src/Paket.cpp:264:8:float* Paket::ArayuzLatAl()	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:265:8:float* Paket::ArayuzLonAl()	16	static
+../Drivers/MyDrivers/Src/Paket.cpp:267:9:uint8_t Paket::CRC8Hesaplama(uint8_t*, uint8_t, uint8_t)	32	static
+../Drivers/MyDrivers/Src/Paket.cpp:290:7:float Paket::bytesToFloat(uint8_t*, int32_t)	32	static
+../Drivers/MyDrivers/Src/Paket.cpp:301:6:void Paket::floatToBytes(float*, uint8_t*)	32	static

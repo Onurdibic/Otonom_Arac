@@ -2,7 +2,7 @@
 
 #define HMC5883L_ADDRESS 0x1E << 1 // I2C adresi
 
-MyMag::MyMag(I2C_HandleTypeDef *hi2c)
+MAG::MAG(I2C_HandleTypeDef *hi2c)
 {
   this->hi2c = hi2c;
   x_s16 = y_s16 = z_s16 = 0;
@@ -10,7 +10,7 @@ MyMag::MyMag(I2C_HandleTypeDef *hi2c)
   xOffset_f = yOffset_f =0.0f;
 }
 
-void MyMag::Yapilandir()
+void MAG::Yapilandir()
 {
 	//Configuration Register A
 	uint8_t dataCRA[2] = {HMC5883_REGISTER_MAG_CRA_REG_M, 0x70}; // 8 ortalama, 15 Hz, normal ölçüm
@@ -25,7 +25,7 @@ void MyMag::Yapilandir()
 	HAL_I2C_Master_Transmit(hi2c, HMC5883L_ADDRESS, dataMR, 2, 100);
 }
 
-void MyMag::MagDataOku(int16_t *x_s16, int16_t *y_s16, int16_t *z_s16)
+void MAG::MagDataOku(int16_t *x_s16, int16_t *y_s16, int16_t *z_s16)
 {
   uint8_t buffer[6];
   HAL_I2C_Mem_Read(hi2c, HMC5883L_ADDRESS, HMC5883_REGISTER_MAG_OUT_X_H_M, 1, buffer, 6, 100);
@@ -34,7 +34,7 @@ void MyMag::MagDataOku(int16_t *x_s16, int16_t *y_s16, int16_t *z_s16)
   *z_s16 = (int16_t)((buffer[2] << 8) | buffer[3]);
   *y_s16 = (int16_t)((buffer[4] << 8) | buffer[5]);
 }
-void MyMag::KalibreEt()
+void MAG::KalibreEt()
 {
     int16_t xEksen_s16, yEksen_s16,zEksen_s16;
     int16_t xMin = 3200, yMin = 3200,zMin = 3200;
@@ -59,7 +59,7 @@ void MyMag::KalibreEt()
     yOffset_f = (yMax + yMin) / 2;
     zOffset_f = (zMax + zMin) / 2;
 }
-float* MyMag::HeadingOlustur(float pitch, float roll)
+float* MAG::HeadingOlustur(float pitch, float roll)
 {
 	float kalibreliX_f, kalibreliY_f,kalibreliZ_f;
 	float TiltliX_f,TiltliY_f;

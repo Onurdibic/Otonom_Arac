@@ -13,8 +13,8 @@ class Isaret
 {
 public:
 	Isaret();
-	float ustSinirla(float isaret_f,uint32_t sinirdeger_u32);
-	float altSinirla(float isaret_f,uint32_t sinirdeger_u32);
+	float ustSinirla(float isaret_f,float sinirdeger_f);
+	float altSinirla(float isaret_f,float sinirdeger_f);
 
 
 private:

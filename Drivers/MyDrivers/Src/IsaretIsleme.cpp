@@ -10,19 +10,19 @@ Isaret::Isaret()
 {
 
 }
-float Isaret::ustSinirla(float isaret_f,uint32_t sinirdeger_u32 )
+float Isaret::ustSinirla(float isaret_f,float sinirdeger_f )
 {
-	if(isaret_f > sinirdeger_u32 )
+	if(isaret_f > sinirdeger_f )
 	{
-		isaret_f = sinirdeger_u32;
+		isaret_f = sinirdeger_f;
 	}
 	return isaret_f;
 }
-float Isaret::altSinirla(float isaret_f,uint32_t sinirdeger_u32 )
+float Isaret::altSinirla(float isaret_f,float sinirdeger_f )
 {
-	if(isaret_f < sinirdeger_u32 )
+	if(isaret_f < sinirdeger_f )
 	{
-		isaret_f = sinirdeger_u32;
+		isaret_f = sinirdeger_f;
 	}
 	return isaret_f;
 }

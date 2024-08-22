@@ -13,10 +13,10 @@
 #include "Kalman.h"
 #include <cmath>
 
-class MyImu
+class IMU
 {
 public:
-    MyImu(I2C_HandleTypeDef *hi2c);
+    IMU(I2C_HandleTypeDef *hi2c);
     KalmanFiltresi kalman;
 
     void DBC_MPU6500_Reset();

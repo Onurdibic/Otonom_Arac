@@ -15,6 +15,8 @@ extern "C" {
 #include "i2c.h"
 #include "usart.h"
 #include "gpio.h"
+#include "tim.h"
+#include "adc.h"
 
 void setup();
 void loop();

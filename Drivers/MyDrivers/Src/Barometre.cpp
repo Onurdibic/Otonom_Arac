@@ -7,10 +7,10 @@
 #include "Barometre.h"
 #include <math.h>
 
-Barometre::Barometre(I2C_HandleTypeDef* hi2c, uint8_t adres)
+Barometre::Barometre(I2C_HandleTypeDef* hi2c)
 {
     this->hi2c=hi2c;
-	this->adres=adres;
+	this->adres=0xEE;
 	sicaklik_f=0;
 	basinc_f=0;
 }

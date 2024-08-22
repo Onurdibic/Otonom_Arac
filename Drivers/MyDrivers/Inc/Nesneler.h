@@ -11,31 +11,30 @@
 #include "Motor.h"
 #include "Barometre.h"
 #include "Paket.h"
-#include "mytimer.h"
+#include "Timer.h"
 #include "gorevyonetici.h"
 #include "Gps.h"
 #include "Imu.h"
 #include "IsaretIsleme.h"
 #include "Mag.h"
+#include "VoltajSensor.h"
 /*************************Nesneler**************************/
-//Uart uart3(USART3);
-
 Timer timer3(TIM3);
-//Timer timer2(TIM2);
 Gorevyonetici gorev(TIM3);
-MyImu imu(&hi2c1);
+IMU imu(&hi2c1);
 GPS gps(&huart2);
-MyMag mag(&hi2c1);
-Barometre barometre(&hi2c1, 0xEE);
+MAG mag(&hi2c1);
+Barometre barometre(&hi2c1);
 Motor motorSag(&htim1, &htim2, GPIOD, GPIO_PIN_1, GPIOD, GPIO_PIN_2);
 Motor motorSol(&htim1, &htim2, GPIOB, GPIO_PIN_4, GPIOB, GPIO_PIN_5);
 Araba araba(motorSol,motorSag); //sol 4 ,sag 2
-
-Paket GpsPaket(0x12, 0x34, 0x01, 0x11); //veri boyutu 17
+VoltajSensor vsensor1(&hadc1);
+Paket GpsPaket(0x12, 0x34, 0x01, 0x0D); //veri boyutu 13
 Paket ImuPaket(0x12, 0x34, 0x02, 0x11);//veri boyutu 17
 Paket VersiyonPaket(0x12, 0x34, 0x03, 0x04); //veri boyutu 4
 Paket YoklamaPaket(0x12, 0x34, 0x04, 0x04);//veri boyutu 4
 Paket RotaPaket(0x12, 0x34, 0x05, 0x04);//veri boyutu 4
+Paket SistemPaket(0x12, 0x34, 0x06, 0x09);//veri boyutu 9
 
 Paket ArayuzPaket(&huart3);
 Isaret isaret;

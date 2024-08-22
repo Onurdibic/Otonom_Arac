@@ -1,0 +1,4 @@
+../Drivers/MyDrivers/Src/VoltajSensor.cpp:10:1:VoltajSensor::VoltajSensor(ADC_HandleTypeDef*)	16	static
+../Drivers/MyDrivers/Src/VoltajSensor.cpp:12:6:void VoltajSensor::Yapilandir()	16	static
+../Drivers/MyDrivers/Src/VoltajSensor.cpp:16:7:float VoltajSensor::Olc()	16	static
+../Drivers/MyDrivers/Src/VoltajSensor.cpp:24:7:float VoltajSensor::BataryaYuzdeBul()	16	static

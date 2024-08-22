@@ -1,13 +1,14 @@
 C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/c++/11.3.1/bits/std_abs.h:75:3:constexpr float std::abs(float)	16	static
-../Core/Src/program.cpp:57:6:void setup()	8	static
-../Core/Src/program.cpp:90:6:void loop()	8	static
-../Core/Src/program.cpp:100:6:void GpsVeriGorev()	8	static
-../Core/Src/program.cpp:113:6:void EksenGorev()	8	static
-../Core/Src/program.cpp:125:6:void ImuVeriGorev()	8	static
-../Core/Src/program.cpp:132:6:void YonelmeGorev()	24	static
-../Core/Src/program.cpp:215:6:void YonelmeBayrakGorev()	4	static
-../Core/Src/program.cpp:219:6:void ArayuzTask()	8	static
-../Core/Src/program.cpp:249:17:void TIM3_IRQHandler()	8	static
-../Core/Src/program.cpp:254:17:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	16	static
-../Core/Src/program.cpp:264:1:void __static_initialization_and_destruction_0(int, int)	32	static
-../Core/Src/program.cpp:264:1:cpp)	8	static
+../Core/Src/program.cpp:53:6:void setup()	8	static
+../Core/Src/program.cpp:81:6:void loop()	8	static
+../Core/Src/program.cpp:90:6:void GpsVeriGorev()	16	static
+../Core/Src/program.cpp:101:6:void EksenGorev()	8	static
+../Core/Src/program.cpp:114:6:void ImuVeriGorev()	8	static
+../Core/Src/program.cpp:124:6:void HedefGorev()	40	static
+../Core/Src/program.cpp:217:6:void ArayuzGorev()	8	static
+../Core/Src/program.cpp:246:6:void AdcOkuGorev()	8	static
+../Core/Src/program.cpp:258:17:void TIM3_IRQHandler()	8	static
+../Core/Src/program.cpp:263:17:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	16	static
+C:\ST\STM32CubeIDE_1.14.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235\tools\bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/include/c++/11.3.1/cmath:415:5:constexpr typename __gnu_cxx::__promote_2<_Tp, _Up>::__type std::pow(_Tp, _Up) [with _Tp = float; _Up = int]	24	static
+../Core/Src/program.cpp:273:1:void __static_initialization_and_destruction_0(int, int)	32	static
+../Core/Src/program.cpp:273:1:cpp)	8	static

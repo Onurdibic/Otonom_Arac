@@ -14,16 +14,16 @@
 #define WHO_AM_I 0x75
 #define RESET_BIT 0x80
 
-MyImu::MyImu(I2C_HandleTypeDef *hi2c)
+IMU::IMU(I2C_HandleTypeDef *hi2c)
     : hi2c(hi2c), kalman(0.05, 0.2, 10){}
 
-void MyImu::DBC_MPU6500_Reset()
+void IMU::DBC_MPU6500_Reset()
 {
 	data_u8 = RESET_BIT;
 	HAL_I2C_Mem_Write(hi2c, MPU6500_ADDRESS , PWR_MGMT_1_REG, 1, &data_u8, 1, 100);
 	HAL_Delay(100);
 }
-void MyImu::DBC_MPU6500_YAPILANDIR()
+void IMU::DBC_MPU6500_YAPILANDIR()
 {
 	uint8_t check_u8;
 	DBC_MPU6500_Reset();
@@ -46,7 +46,7 @@ void MyImu::DBC_MPU6500_YAPILANDIR()
 	}
 }
 
-void MyImu::DBC_GYRO_OFSET()
+void IMU::DBC_GYRO_OFSET()
 {
 	for(int i=0; i<2000; i++)
 	{
@@ -62,7 +62,7 @@ void MyImu::DBC_GYRO_OFSET()
 	    //HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 	    HAL_Delay(100);
 }
-void MyImu::DBC_DATA_OKU()
+void IMU::DBC_DATA_OKU()
 {
     DBC_ACC_OKU();
     DBC_SICAKLIK_OKU();
@@ -78,7 +78,7 @@ void MyImu::DBC_DATA_OKU()
     }
 
 }
-void MyImu::DBC_ACC_OKU()
+void IMU::DBC_ACC_OKU()
 {
 	uint8_t accBuffer[6];
 
@@ -89,7 +89,7 @@ void MyImu::DBC_ACC_OKU()
 	accEksen[1] = (accBuffer[2] << 8 | accBuffer[3]);
 	accEksen[2] = (accBuffer[4] << 8 | accBuffer[5]);
 }
-void MyImu::DBC_SICAKLIK_OKU()
+void IMU::DBC_SICAKLIK_OKU()
 {
 	uint8_t sicaklikBuffer[2];
 
@@ -99,7 +99,7 @@ void MyImu::DBC_SICAKLIK_OKU()
 	hamSicaklik_u16 = (sicaklikBuffer[0] << 8 | sicaklikBuffer[1]);
 	Sicaklik_f=((float)((float)hamSicaklik_u16 / 333.87)) + 21;
 }
-void MyImu::DBC_GYRO_OKU()
+void IMU::DBC_GYRO_OKU()
 {
 
 	uint8_t gyroBuffer[6];
@@ -112,7 +112,7 @@ void MyImu::DBC_GYRO_OKU()
 	gyroEksen[2] = (gyroBuffer[4] << 8 | gyroBuffer[5]);
 
 }
-void MyImu::DBC_ACI_BULMA()
+void IMU::DBC_ACI_BULMA()
 {
 	DBC_DATA_OKU();//0.0014 0.000001066
 	//Ham Veri Iyilestirmeleri
@@ -132,7 +132,7 @@ void MyImu::DBC_ACI_BULMA()
 	kalman.veriGuncelle(rollAci_f);
 }
 
-float* MyImu::PitchAl(){ return &pitchAcisi_f;}
-float* MyImu::RollAl(){return &rollAci_f;}
-float* MyImu::YawAl(){return &gyroYawAci_f;}
-float* MyImu::SicaklikAl(){return &Sicaklik_f;}
+float* IMU::PitchAl(){ return &pitchAcisi_f;}
+float* IMU::RollAl(){return &rollAci_f;}
+float* IMU::YawAl(){return &gyroYawAci_f;}
+float* IMU::SicaklikAl(){return &Sicaklik_f;}

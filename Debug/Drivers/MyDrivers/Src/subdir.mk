@@ -13,9 +13,9 @@ CPP_SRCS += \
 ../Drivers/MyDrivers/Src/Mag.cpp \
 ../Drivers/MyDrivers/Src/Motor.cpp \
 ../Drivers/MyDrivers/Src/Paket.cpp \
-../Drivers/MyDrivers/Src/gorevyonetici.cpp \
-../Drivers/MyDrivers/Src/myUart.cpp \
-../Drivers/MyDrivers/Src/mytimer.cpp 
+../Drivers/MyDrivers/Src/Timer.cpp \
+../Drivers/MyDrivers/Src/VoltajSensor.cpp \
+../Drivers/MyDrivers/Src/gorevyonetici.cpp 
 
 OBJS += \
 ./Drivers/MyDrivers/Src/Barometre.o \
@@ -26,9 +26,9 @@ OBJS += \
 ./Drivers/MyDrivers/Src/Mag.o \
 ./Drivers/MyDrivers/Src/Motor.o \
 ./Drivers/MyDrivers/Src/Paket.o \
-./Drivers/MyDrivers/Src/gorevyonetici.o \
-./Drivers/MyDrivers/Src/myUart.o \
-./Drivers/MyDrivers/Src/mytimer.o 
+./Drivers/MyDrivers/Src/Timer.o \
+./Drivers/MyDrivers/Src/VoltajSensor.o \
+./Drivers/MyDrivers/Src/gorevyonetici.o 
 
 CPP_DEPS += \
 ./Drivers/MyDrivers/Src/Barometre.d \
@@ -39,9 +39,9 @@ CPP_DEPS += \
 ./Drivers/MyDrivers/Src/Mag.d \
 ./Drivers/MyDrivers/Src/Motor.d \
 ./Drivers/MyDrivers/Src/Paket.d \
-./Drivers/MyDrivers/Src/gorevyonetici.d \
-./Drivers/MyDrivers/Src/myUart.d \
-./Drivers/MyDrivers/Src/mytimer.d 
+./Drivers/MyDrivers/Src/Timer.d \
+./Drivers/MyDrivers/Src/VoltajSensor.d \
+./Drivers/MyDrivers/Src/gorevyonetici.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -51,7 +51,7 @@ Drivers/MyDrivers/Src/%.o Drivers/MyDrivers/Src/%.su Drivers/MyDrivers/Src/%.cyc
 clean: clean-Drivers-2f-MyDrivers-2f-Src
 
 clean-Drivers-2f-MyDrivers-2f-Src:
-	-$(RM) ./Drivers/MyDrivers/Src/Barometre.cyclo ./Drivers/MyDrivers/Src/Barometre.d ./Drivers/MyDrivers/Src/Barometre.o ./Drivers/MyDrivers/Src/Barometre.su ./Drivers/MyDrivers/Src/Gps.cyclo ./Drivers/MyDrivers/Src/Gps.d ./Drivers/MyDrivers/Src/Gps.o ./Drivers/MyDrivers/Src/Gps.su ./Drivers/MyDrivers/Src/Imu.cyclo ./Drivers/MyDrivers/Src/Imu.d ./Drivers/MyDrivers/Src/Imu.o ./Drivers/MyDrivers/Src/Imu.su ./Drivers/MyDrivers/Src/IsaretIsleme.cyclo ./Drivers/MyDrivers/Src/IsaretIsleme.d ./Drivers/MyDrivers/Src/IsaretIsleme.o ./Drivers/MyDrivers/Src/IsaretIsleme.su ./Drivers/MyDrivers/Src/Kalman.cyclo ./Drivers/MyDrivers/Src/Kalman.d ./Drivers/MyDrivers/Src/Kalman.o ./Drivers/MyDrivers/Src/Kalman.su ./Drivers/MyDrivers/Src/Mag.cyclo ./Drivers/MyDrivers/Src/Mag.d ./Drivers/MyDrivers/Src/Mag.o ./Drivers/MyDrivers/Src/Mag.su ./Drivers/MyDrivers/Src/Motor.cyclo ./Drivers/MyDrivers/Src/Motor.d ./Drivers/MyDrivers/Src/Motor.o ./Drivers/MyDrivers/Src/Motor.su ./Drivers/MyDrivers/Src/Paket.cyclo ./Drivers/MyDrivers/Src/Paket.d ./Drivers/MyDrivers/Src/Paket.o ./Drivers/MyDrivers/Src/Paket.su ./Drivers/MyDrivers/Src/gorevyonetici.cyclo ./Drivers/MyDrivers/Src/gorevyonetici.d ./Drivers/MyDrivers/Src/gorevyonetici.o ./Drivers/MyDrivers/Src/gorevyonetici.su ./Drivers/MyDrivers/Src/myUart.cyclo ./Drivers/MyDrivers/Src/myUart.d ./Drivers/MyDrivers/Src/myUart.o ./Drivers/MyDrivers/Src/myUart.su ./Drivers/MyDrivers/Src/mytimer.cyclo ./Drivers/MyDrivers/Src/mytimer.d ./Drivers/MyDrivers/Src/mytimer.o ./Drivers/MyDrivers/Src/mytimer.su
+	-$(RM) ./Drivers/MyDrivers/Src/Barometre.cyclo ./Drivers/MyDrivers/Src/Barometre.d ./Drivers/MyDrivers/Src/Barometre.o ./Drivers/MyDrivers/Src/Barometre.su ./Drivers/MyDrivers/Src/Gps.cyclo ./Drivers/MyDrivers/Src/Gps.d ./Drivers/MyDrivers/Src/Gps.o ./Drivers/MyDrivers/Src/Gps.su ./Drivers/MyDrivers/Src/Imu.cyclo ./Drivers/MyDrivers/Src/Imu.d ./Drivers/MyDrivers/Src/Imu.o ./Drivers/MyDrivers/Src/Imu.su ./Drivers/MyDrivers/Src/IsaretIsleme.cyclo ./Drivers/MyDrivers/Src/IsaretIsleme.d ./Drivers/MyDrivers/Src/IsaretIsleme.o ./Drivers/MyDrivers/Src/IsaretIsleme.su ./Drivers/MyDrivers/Src/Kalman.cyclo ./Drivers/MyDrivers/Src/Kalman.d ./Drivers/MyDrivers/Src/Kalman.o ./Drivers/MyDrivers/Src/Kalman.su ./Drivers/MyDrivers/Src/Mag.cyclo ./Drivers/MyDrivers/Src/Mag.d ./Drivers/MyDrivers/Src/Mag.o ./Drivers/MyDrivers/Src/Mag.su ./Drivers/MyDrivers/Src/Motor.cyclo ./Drivers/MyDrivers/Src/Motor.d ./Drivers/MyDrivers/Src/Motor.o ./Drivers/MyDrivers/Src/Motor.su ./Drivers/MyDrivers/Src/Paket.cyclo ./Drivers/MyDrivers/Src/Paket.d ./Drivers/MyDrivers/Src/Paket.o ./Drivers/MyDrivers/Src/Paket.su ./Drivers/MyDrivers/Src/Timer.cyclo ./Drivers/MyDrivers/Src/Timer.d ./Drivers/MyDrivers/Src/Timer.o ./Drivers/MyDrivers/Src/Timer.su ./Drivers/MyDrivers/Src/VoltajSensor.cyclo ./Drivers/MyDrivers/Src/VoltajSensor.d ./Drivers/MyDrivers/Src/VoltajSensor.o ./Drivers/MyDrivers/Src/VoltajSensor.su ./Drivers/MyDrivers/Src/gorevyonetici.cyclo ./Drivers/MyDrivers/Src/gorevyonetici.d ./Drivers/MyDrivers/Src/gorevyonetici.o ./Drivers/MyDrivers/Src/gorevyonetici.su
 
 .PHONY: clean-Drivers-2f-MyDrivers-2f-Src
 

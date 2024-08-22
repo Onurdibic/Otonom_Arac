@@ -14,7 +14,7 @@
 
 class Barometre {
 public:
-    Barometre(I2C_HandleTypeDef* i2c_handle, uint8_t adres);
+    Barometre(I2C_HandleTypeDef* i2c_handle);
     void Yapilandir();
     float *SicaklikOku();
     float BasincOku(uint8_t oss);

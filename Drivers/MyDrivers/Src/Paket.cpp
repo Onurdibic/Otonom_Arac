@@ -46,14 +46,13 @@ void Paket::GpsPaketOlustur(float latitude,float longitude,float altitude,float 
     floatToBytes(&latitude, latBytes_u8);
     floatToBytes(&longitude, lonBytes_u8);
     floatToBytes(&altitude, altBytes_u8);
-    floatToBytes(&derece, dereceBytes_u8);
+
 
     memcpy(gpspaket + 4, latBytes_u8, 4);
     memcpy(gpspaket + 8, lonBytes_u8, 4);
     memcpy(gpspaket + 12, altBytes_u8, 4);
-    memcpy(gpspaket + 16, dereceBytes_u8, 4);
 
-    gpspaket[20]=CRC8Hesaplama(gpspaket,4, 20);
+    gpspaket[16]=CRC8Hesaplama(gpspaket,4, 16);
 }
 void Paket::ImuPaketOlustur(float pitch,float roll,float heading,float sicaklik)
 {
@@ -73,6 +72,19 @@ void Paket::ImuPaketOlustur(float pitch,float roll,float heading,float sicaklik)
     memcpy(imupaket + 16, sicaklikBytes_u8, 4);
 
     imupaket[20] = CRC8Hesaplama(imupaket, 4,20);
+}
+void Paket::SistemPaketOlustur(float derece,float batarya)
+{
+	sistempaket[0] = baslik1_u8;
+	sistempaket[1] = baslik2_u8;
+	sistempaket[2] = paketTipi_u8;
+	sistempaket[3] = dataBoyutu_u8;
+	floatToBytes(&derece, dereceBytes_u8);
+	floatToBytes(&batarya, bataryaBytes_u8);
+	memcpy(sistempaket + 4, dereceBytes_u8, 4);
+	memcpy(sistempaket + 8, bataryaBytes_u8, 4);
+
+	sistempaket[12] = CRC8Hesaplama(sistempaket, 4,12);
 }
 void Paket::VersiyonPaketOlustur(uint8_t b,uint8_t o,uint8_t s)
 {
@@ -109,6 +121,7 @@ void Paket::RotaPaketOlustur()
 }
 void Paket::gpsPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, gpspaket, sizeof(gpspaket));}
 void Paket::imuPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, imupaket, sizeof(imupaket));}
+void Paket::sistemPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, sistempaket, sizeof(sistempaket));}
 void Paket::versiyonPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, versiyonpaket, sizeof(versiyonpaket));}
 void Paket::yoklamaPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, yoklamapaket, sizeof(yoklamapaket));}
 void Paket::rotaPaketCagir(uint8_t *kopyaDizi){memcpy(kopyaDizi, rotapaket, sizeof(rotapaket));}
@@ -186,9 +199,9 @@ void Paket::PaketCoz()
                 break;
 
             case DataOku:
-                if (Paket == ROTA && dataLength_s16 == 8)
+                if (Paket == ROTA && dataLength_s16 == 9)
                 {
-                	if (ArayuzBuffer_u8[(startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + dataLength_s16))
+                	if (ArayuzBuffer_u8[(startIndex_u32 + 8) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + 8))
                 	{
                 		if(GidilecekNoktaBayrak==false)
                 		{
@@ -205,7 +218,7 @@ void Paket::PaketCoz()
                 }
                 else if (Paket == VERSIYON && dataLength_s16 == 4)
                 {
-                	if (ArayuzBuffer_u8[(startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + dataLength_s16))
+                	if (ArayuzBuffer_u8[(startIndex_u32 + 3) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + 3))
                 	{
                 		VersiyonPaketBayrak=true;
                 	}
@@ -216,7 +229,7 @@ void Paket::PaketCoz()
                 }
                 else if (Paket == YOKLAMA && dataLength_s16 == 4)
                 {
-                	if (ArayuzBuffer_u8[(startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + dataLength_s16))
+                	if (ArayuzBuffer_u8[(startIndex_u32 + 3) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + 3))
                 	{
                 		YoklamaFlag=true;
                 		YoklamaPaketFlag=true;
@@ -229,7 +242,7 @@ void Paket::PaketCoz()
                 }
                 else if(Paket == DUR && dataLength_s16==4)
                 {
-                	if (ArayuzBuffer_u8[(startIndex_u32 + dataLength_s16) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + dataLength_s16))
+                	if (ArayuzBuffer_u8[(startIndex_u32 + 3) % sizeof(ArayuzBuffer_u8)] == CRC8Hesaplama(ArayuzBuffer_u8,startIndex_u32,startIndex_u32 + 3))
                 	{
                 		arabaDurBayrak=true;
                 	}

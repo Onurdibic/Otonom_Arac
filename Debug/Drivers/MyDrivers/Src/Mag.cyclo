@@ -1,5 +1,5 @@
-../Drivers/MyDrivers/Src/Mag.cpp:5:1:MyMag::MyMag(I2C_HandleTypeDef*)	1
-../Drivers/MyDrivers/Src/Mag.cpp:13:6:void MyMag::Yapilandir()	1
-../Drivers/MyDrivers/Src/Mag.cpp:28:6:void MyMag::MagDataOku(int16_t*, int16_t*, int16_t*)	1
-../Drivers/MyDrivers/Src/Mag.cpp:37:6:void MyMag::KalibreEt()	8
-../Drivers/MyDrivers/Src/Mag.cpp:62:8:float* MyMag::HeadingOlustur(float, float)	3
+../Drivers/MyDrivers/Src/Mag.cpp:5:1:MAG::MAG(I2C_HandleTypeDef*)	1
+../Drivers/MyDrivers/Src/Mag.cpp:13:6:void MAG::Yapilandir()	1
+../Drivers/MyDrivers/Src/Mag.cpp:28:6:void MAG::MagDataOku(int16_t*, int16_t*, int16_t*)	1
+../Drivers/MyDrivers/Src/Mag.cpp:37:6:void MAG::KalibreEt()	8
+../Drivers/MyDrivers/Src/Mag.cpp:62:8:float* MAG::HeadingOlustur(float, float)	3

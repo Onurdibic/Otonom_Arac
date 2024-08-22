@@ -20,11 +20,13 @@ public:
 
     void GpsPaketOlustur(float latitude,float longitude,float altitude,float derece);
     void ImuPaketOlustur(float pitch,float roll,float yaw,float sicaklik);
+    void SistemPaketOlustur(float derece,float batarya);
     void VersiyonPaketOlustur(uint8_t b,uint8_t o,uint8_t s);
     void YoklamaPaketOlustur();
     void RotaPaketOlustur();
     void gpsPaketCagir(uint8_t *kopyaDizi);
     void imuPaketCagir(uint8_t *kopyaDizi);
+    void sistemPaketCagir(uint8_t *kopyaDizi);
     void versiyonPaketCagir(uint8_t *kopyaDizi);
     void yoklamaPaketCagir(uint8_t *kopyaDizi);
     void rotaPaketCagir(uint8_t *kopyaDizi);
@@ -49,8 +51,9 @@ private:
     uint8_t CRC8Hesaplama(uint8_t *data, uint8_t baslangic, uint8_t bitis);
     void floatToBytes(float *Deger_f, uint8_t* bytes);
     float bytesToFloat(uint8_t* buffer_u8, int32_t startIndex_s32);
-    uint8_t gpspaket[21];
+    uint8_t gpspaket[17];
     uint8_t imupaket[21];
+    uint8_t sistempaket[13];
     uint8_t versiyonpaket[8];
     uint8_t yoklamapaket[8];
     uint8_t rotapaket[8];
@@ -63,7 +66,7 @@ private:
     uint8_t rollBytes_u8[4];
     uint8_t headingBytes_u8[4];
     uint8_t sicaklikBytes_u8[4];
-
+    uint8_t bataryaBytes_u8[4];
     uint8_t latBytes_u8[4];
     uint8_t lonBytes_u8[4];
     uint8_t altBytes_u8[4];
